@@ -1,5 +1,9 @@
 # Integrasi MIPA Server
 
+## Documentation Link
+
+Postman Documentation : [here](https://documenter.getpostman.com/view/6308700/TVYAhgaD)
+
 ## How to start
 
 1. Install MongoDB & check mongo is started with `mongod` or `mongo`
