@@ -1,0 +1,21 @@
+version: "2"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: .
+    environment: 
+      - MONGODB_URI='mongodb://mongo:27017/integrasi-mipa'
+    ports:
+      - "3001:3001"
+    links:
+      - mongodb
+  mongodb:
+    container_name: mongodb
+    image: mongo:4.4
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+volumes:
+  mongodata:

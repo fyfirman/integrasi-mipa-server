@@ -1,0 +1,87 @@
+import { Service, Inject } from 'typedi';
+import argon2 from 'argon2';
+import { randomBytes } from 'crypto';
+import jwt from 'jsonwebtoken';
+import { RestError } from '../helpers/error';
+import { IUser, IUserInputDTO } from '../interfaces/IUser';
+import config from '../config';
+
+@Service()
+export default class AuthService {
+  @Inject('logger') private logger;
+
+  @Inject('userModel') private userModel;
+
+  public async SignUp(userInputDTO: IUserInputDTO): Promise<{ user: IUser }> {
+    try {
+      const salt = randomBytes(32);
+
+      this.logger.silly('Hashing password');
+      const hashedPassword = await argon2.hash(userInputDTO.password, { salt });
+      this.logger.silly('Creating user db record');
+      const userRecord = await this.userModel.create({
+        ...userInputDTO,
+        salt: salt.toString('hex'),
+        password: hashedPassword,
+      });
+
+      const user = userRecord.toObject();
+      Reflect.deleteProperty(user, 'password');
+      Reflect.deleteProperty(user, 'salt');
+
+      return { user };
+    } catch (error) {
+      throw new RestError(500, `An error occured : ${error.message}`);
+    }
+  }
+
+  public async SignIn(npm: string, password: string): Promise<{ user: IUser; token: string }> {
+    const userRecord = await this.userModel.findOne({ npm });
+    if (!userRecord) {
+      throw new RestError(404, 'User not found');
+    }
+
+    this.logger.silly('Checking password');
+    const validPassword = await argon2.verify(userRecord.password, password);
+    if (validPassword) {
+      this.logger.silly('Password is valid!');
+      this.logger.silly('Generating JWT');
+      const token = this.generateToken(userRecord);
+
+      const user = userRecord.toObject();
+      Reflect.deleteProperty(user, 'password');
+      Reflect.deleteProperty(user, 'salt');
+
+      return { user, token };
+    }
+    throw new RestError(401, 'Invalid Password');
+  }
+
+  public async checkRegistered(npm: string): Promise<boolean> {
+    const userRecord = await this.userModel.findOne({ npm });
+    if (userRecord) {
+      return true;
+    }
+    return false;
+  }
+
+  private generateToken(user) {
+    const duration = 60;
+
+    const today = new Date();
+    const expired = new Date(today);
+    expired.setDate(today.getDate() + duration);
+
+    this.logger.silly(`Sign JWT for userId: ${user._id}`);
+
+    return jwt.sign(
+      {
+        _id: user._id,
+        role: user.role,
+        name: user.name,
+        exp: expired.getTime() / 1000,
+      },
+      config.jwtSecret,
+    );
+  }
+}
