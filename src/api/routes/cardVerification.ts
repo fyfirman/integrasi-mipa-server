@@ -15,7 +15,6 @@ export default (app: Router): void => {
   app.use('/verification/card', route);
 
   route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    const logger: Logger = Container.get('logger');
     try {
       const cardVerificationService: CardVerificationService = Container.get(
         CardVerificationService,
@@ -39,7 +38,6 @@ export default (app: Router): void => {
         .status(200);
       logResponse(req, res, message);
     } catch (error) {
-      logger.info(error);
       next(error);
     }
   });
