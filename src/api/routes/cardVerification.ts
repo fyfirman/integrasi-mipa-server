@@ -42,6 +42,18 @@ export default (app: Router): void => {
     }
   });
 
+  route.get('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const cardVerificationRecord = await cardVerificationService.get(req.params.id);
+
+      const message = 'Card verification record found';
+      res.json({ success: true, message, data: { cardVerificationRecord } }).status(200);
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   route.post(
     '/',
     middlewares.isAuth,
