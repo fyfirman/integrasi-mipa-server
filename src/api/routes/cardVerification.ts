@@ -23,19 +23,24 @@ export default (app: Router): void => {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
 
-      let verificationRecords = null;
-      await cardVerificationService.getAll(skip, limit).then((cardVerifications) => {
-        verificationRecords = cardVerifications;
-      });
+      const verificationRecords = await cardVerificationService.getAll(skip, limit);
 
-      const message = 'Card verification record found';
-      res
-        .json({
+      let message = '';
+      if (verificationRecords !== null) {
+        message = 'Card verification record found';
+        res.status(200).json({
           success: true,
           message,
           data: { verificationRecords },
-        })
-        .status(200);
+        });
+      } else {
+        message = 'Card verification record not found';
+        res.status(204).json({
+          success: true,
+          message,
+          data: { verificationRecords: [] },
+        });
+      }
       logResponse(req, res, message);
     } catch (error) {
       next(error);
@@ -46,8 +51,14 @@ export default (app: Router): void => {
     try {
       const cardVerificationRecord = await cardVerificationService.get(req.params.id);
 
-      const message = 'Card verification record found';
-      res.json({ success: true, message, data: { cardVerificationRecord } }).status(200);
+      let message = '';
+      if (cardVerificationRecord !== null) {
+        message = 'Card verification record found';
+        res.status(200).json({ success: true, message, data: { cardVerificationRecord } });
+      } else {
+        message = 'Card verification record not found';
+        res.status(404).json({ success: false, message, data: { cardVerificationRecord } });
+      }
       logResponse(req, res, message);
     } catch (error) {
       next(error);
