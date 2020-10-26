@@ -14,12 +14,10 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/verification/card', route);
 
+  const cardVerificationService: CardVerificationService = Container.get(CardVerificationService);
+
   route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const cardVerificationService: CardVerificationService = Container.get(
-        CardVerificationService,
-      );
-
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
 
@@ -52,10 +50,6 @@ export default (app: Router): void => {
     }),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const cardVerificationService: CardVerificationService = Container.get(
-          CardVerificationService,
-        );
-
         const logger: Logger = Container.get('logger');
         logger.debug(req.body);
 
