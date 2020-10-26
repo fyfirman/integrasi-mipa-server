@@ -83,11 +83,32 @@ export default (app: Router): void => {
     },
   );
 
-  // route.put('/verify', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
+  route.delete(
+    '/',
+    middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await cardVerificationService.delete(req.currentUser._id);
+        let message = '';
+        if (result) {
+          message = 'Card verification record has been deleted';
+          res.status(204).json({
+            success: true,
+            message,
+          });
+        } else {
+          message = 'User not found. Record is not deleted';
+          res.status(404).json({
+            success: false,
+            message,
+          });
+        }
 
-  //   } catch (error) {
-
-  //   }
-  // });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 };

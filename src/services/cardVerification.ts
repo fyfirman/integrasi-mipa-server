@@ -35,4 +35,16 @@ export default class CardVerificationService {
       throw new RestError(400, error.message);
     }
   }
+
+  public async delete(userId: string): Promise<boolean> {
+    try {
+      const result = await this.cardVerificationModel.deleteOne({ userId });
+      if (result.deletedCount === 1) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      throw new RestError(400, error.message);
+    }
+  }
 }
