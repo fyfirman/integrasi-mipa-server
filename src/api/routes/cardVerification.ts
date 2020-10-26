@@ -35,7 +35,7 @@ export default (app: Router): void => {
         });
       } else {
         message = 'Card verification record not found';
-        res.status(204).json({
+        res.status(200).json({
           success: true,
           message,
           data: { verificationRecords: [] },
@@ -94,6 +94,31 @@ export default (app: Router): void => {
     },
   );
 
+  route.put(
+    '/verify/:id',
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        await cardVerificationService.verify(req.params.id, req.body.result);
+        const verificationRecord = await cardVerificationService.get(req.params.id);
+
+        const message = req.body.result
+          ? 'Card verification has been accepted'
+          : 'Card verification has been declined';
+
+        res.status(200).json({
+          success: true,
+          message,
+          verificationRecord,
+        });
+
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
   route.delete(
     '/',
     middlewares.isAuth,
@@ -104,7 +129,7 @@ export default (app: Router): void => {
         let message = '';
         if (result) {
           message = 'Card verification record has been deleted';
-          res.status(204).json({
+          res.status(200).json({
             success: true,
             message,
           });

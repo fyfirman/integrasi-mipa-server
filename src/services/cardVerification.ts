@@ -36,6 +36,26 @@ export default class CardVerificationService {
     }
   }
 
+  public async verify(
+    _id: string,
+    result: boolean,
+  ): Promise<{ idCardVerification: ICardVerification }> {
+    try {
+      const results = await this.cardVerificationModel.updateOne(
+        { _id },
+        { $set: { result, hasBeenVerified: true } },
+      );
+
+      if (results.nModified === 0) {
+        throw new RestError(404, 'Card verification record not found');
+      }
+
+      return results;
+    } catch (error) {
+      throw new RestError(400, error.message);
+    }
+  }
+
   public async delete(userId: string): Promise<boolean> {
     try {
       const result = await this.cardVerificationModel.deleteOne({ userId });
