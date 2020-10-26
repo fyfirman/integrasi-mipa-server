@@ -82,4 +82,12 @@ export default (app: Router): void => {
       }
     },
   );
+
+  // route.put('/verify', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  //   try {
+
+  //   } catch (error) {
+
+  //   }
+  // });
 };

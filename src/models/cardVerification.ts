@@ -6,11 +6,17 @@ const CardVerification = new mongoose.Schema(
     userId: {
       type: String,
       unique: true,
+      required: true,
     },
     selfiePhotoPath: {
       type: String,
+      required: true,
     },
-    status: {
+    hasBeenVerified: {
+      type: Boolean,
+      default: false,
+    },
+    result: {
       type: Boolean,
       default: false,
     },
