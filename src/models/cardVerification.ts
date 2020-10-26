@@ -16,7 +16,7 @@ const CardVerification = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    result: {
+    isAccepted: {
       type: Boolean,
       default: false,
     },

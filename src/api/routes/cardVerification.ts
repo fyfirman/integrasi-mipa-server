@@ -99,10 +99,10 @@ export default (app: Router): void => {
     middlewares.isAuth,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        await cardVerificationService.verify(req.params.id, req.body.result);
+        await cardVerificationService.verify(req.params.id, req.body.isAccepted);
         const verificationRecord = await cardVerificationService.get(req.params.id);
 
-        const message = req.body.result
+        const message = req.body.isAccepted
           ? 'Card verification has been accepted'
           : 'Card verification has been declined';
 

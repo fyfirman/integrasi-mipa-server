@@ -5,7 +5,7 @@ export interface ICardVerification {
   userId: IUser['_id'];
   selfiePhotoPath: string;
   hasBeenVerified: boolean;
-  result: boolean;
+  isAccepted: boolean;
 }
 
 export interface ICardVerificationInputDTO {

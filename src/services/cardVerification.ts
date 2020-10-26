@@ -38,12 +38,12 @@ export default class CardVerificationService {
 
   public async verify(
     _id: string,
-    result: boolean,
+    isAccepted: boolean,
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
       const results = await this.cardVerificationModel.updateOne(
         { _id },
-        { $set: { result, hasBeenVerified: true } },
+        { $set: { isAccepted, hasBeenVerified: true } },
       );
 
       if (results.nModified === 0) {
