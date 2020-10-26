@@ -1,13 +1,12 @@
 import { IUser } from './IUser';
 
-export interface IIdCardVerification {
+export interface ICardVerification {
   _id: string;
   userId: IUser['_id'];
   selfiePhotoPath: string;
   status: boolean;
 }
 
-export interface IIdCardVerificationInputDTO {
-  userId: string;
+export interface ICardVerificationInputDTO {
   selfiePhoto: File;
 }

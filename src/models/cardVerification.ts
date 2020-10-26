@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IIdCardVerification } from '../interfaces/IIdCardVerification';
+import { ICardVerification } from '../interfaces/ICardVerification';
 
 const IdCardVerification = new mongoose.Schema(
   {
@@ -17,7 +17,7 @@ const IdCardVerification = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model<IIdCardVerification & mongoose.Document>(
+export default mongoose.model<ICardVerification & mongoose.Document>(
   'IdCardVerification',
   IdCardVerification,
 );
