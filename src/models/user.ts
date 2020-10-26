@@ -24,10 +24,6 @@ const User = new mongoose.Schema(
       type: String,
       enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
     },
-    verificationStatus: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true },
 );
