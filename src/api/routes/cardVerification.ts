@@ -69,11 +69,10 @@ export default (app: Router): void => {
     '/',
     middlewares.isAuth,
     upload.single('selfiePhoto'),
-    middlewares.attachCurrentUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const cardVerificationInput = {
-          userId: req.currentUser._id,
+          userId: req.user._id,
           selfiePhotoPath: req.file.path,
         };
 
@@ -122,10 +121,9 @@ export default (app: Router): void => {
   route.delete(
     '/',
     middlewares.isAuth,
-    middlewares.attachCurrentUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const result = await cardVerificationService.delete(req.currentUser._id);
+        const result = await cardVerificationService.delete(req.user._id);
         let message = '';
         if (result) {
           message = 'Card verification record has been deleted';
