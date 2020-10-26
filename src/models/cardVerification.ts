@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { ICardVerification } from '../interfaces/ICardVerification';
 
-const IdCardVerification = new mongoose.Schema(
+const CardVerification = new mongoose.Schema(
   {
     userId: {
       type: String,
@@ -12,12 +12,13 @@ const IdCardVerification = new mongoose.Schema(
     },
     status: {
       type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },
 );
 
 export default mongoose.model<ICardVerification & mongoose.Document>(
-  'IdCardVerification',
-  IdCardVerification,
+  'CardVerification',
+  CardVerification,
 );

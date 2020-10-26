@@ -7,7 +7,7 @@ import { RestError } from '../helpers/error';
 export default class CardVerificationService {
   @Inject('cardVerificationModel') private cardVerificationModel;
 
-  public async getAll(skip = 0, limit = 0): Promise<{ idCardVerifications: ICardVerification }> {
+  public async getAll(skip = 0, limit = 0): Promise<{ cardVerifications: ICardVerification }> {
     try {
       const verificationRecords = await this.cardVerificationModel.find({}).skip(skip).limit(limit);
       return verificationRecords;
@@ -32,7 +32,7 @@ export default class CardVerificationService {
       const verificationRecord = await this.cardVerificationModel.create(record);
       return verificationRecord;
     } catch (error) {
-      throw new RestError(400, 'Error occured');
+      throw new RestError(400, error.message);
     }
   }
 }

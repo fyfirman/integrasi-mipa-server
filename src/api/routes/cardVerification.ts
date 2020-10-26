@@ -2,14 +2,16 @@ import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import { Logger } from 'winston';
-import { celebrate, Joi } from 'celebrate';
+import multer from 'multer';
+import diskStorage from '../../config/multer';
 import middlewares from '../middlewares';
 import { ICardVerificationInputDTO } from '../../interfaces/ICardVerification';
 import logResponse from '../../helpers/logResponse';
 import CardVerificationService from '../../services/cardVerification';
 
 const route = Router();
+
+const upload = multer({ storage: diskStorage });
 
 export default (app: Router): void => {
   app.use('/verification/card', route);
@@ -22,8 +24,8 @@ export default (app: Router): void => {
       const limit = parseInt(req.query.limit, 10);
 
       let verificationRecords = null;
-      await cardVerificationService.getAll(skip, limit).then((idCardVerifications) => {
-        verificationRecords = idCardVerifications;
+      await cardVerificationService.getAll(skip, limit).then((cardVerifications) => {
+        verificationRecords = cardVerifications;
       });
 
       const message = 'Card verification record found';
@@ -43,28 +45,25 @@ export default (app: Router): void => {
   route.post(
     '/',
     middlewares.isAuth,
-    celebrate({
-      body: Joi.object({
-        selfiePhoto: Joi.string().required(),
-      }),
-    }),
+    upload.single('selfiePhoto'),
+    middlewares.attachCurrentUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const logger: Logger = Container.get('logger');
-        logger.debug(req.body);
+        const cardVerificationInput = {
+          userId: req.currentUser._id,
+          selfiePhotoPath: req.file.path,
+        };
 
         const verificationRecord = await cardVerificationService.create(
-          req.body as ICardVerificationInputDTO,
+          cardVerificationInput as ICardVerificationInputDTO,
         );
 
         const message = 'Card verification record created';
-        res
-          .json({
-            success: true,
-            message,
-            data: { verificationRecord },
-          })
-          .status(200);
+        res.status(201).json({
+          success: true,
+          message,
+          data: { verificationRecord },
+        });
         logResponse(req, res, message);
       } catch (error) {
         next(error);

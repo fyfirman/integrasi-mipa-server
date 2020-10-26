@@ -8,5 +8,6 @@ export interface ICardVerification {
 }
 
 export interface ICardVerificationInputDTO {
-  selfiePhoto: File;
+  userId: IUser['_id'];
+  selfiePhotoPath: File;
 }
