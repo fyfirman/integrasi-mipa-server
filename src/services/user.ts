@@ -1,5 +1,7 @@
 import { Service, Inject } from 'typedi';
-import { IUser, IUserInputDTO } from '../interfaces/IUser';
+import { randomBytes } from 'crypto';
+import argon2 from 'argon2';
+import { IUser, changePasswordUserDTO } from '../interfaces/IUser';
 import { RestError } from '../helpers/error';
 
 @Service()
@@ -13,34 +15,37 @@ export default class UserService {
       const userRecords = await this.userModel.find({}).skip(skip).limit(limit);
       return userRecords;
     } catch (error) {
-      throw new RestError(404, 'User not found');
+      throw new RestError(404, `An error occured ${error.message}`);
     }
   }
 
-  public async get(id : string) : Promise<{users: IUser}> {
+  public async get(id: string): Promise<{ users: IUser }> {
     try {
       const userRecord = await this.userModel.findById(id);
       return userRecord;
     } catch (error) {
-      throw new RestError(404, 'User not found');
+      throw new RestError(404, `An error occured ${error.message}`);
     }
   }
 
-  // public async updateProfile(id: string, user: IUserInputDTO) : Promise<{user: IUser}> {
-  //   try {
-  //     const oldRecord = await this.userModel.findById(id);
-  //     const newRecord = {
-  //       profile: {
-  //         ...oldRecord.profile,
-  //         ...user.profile,
-  //       },
-  //     };
+  public async changePassword(user: changePasswordUserDTO): Promise<{ user: IUser }> {
+    try {
+      const salt = randomBytes(32);
 
-  //     const userRecord = await this.userModel.findByIdAndUpdate(id, newRecord, { new: true });
-  //     return userRecord;
-  //   } catch (error) {
-  //     this.logger.error(error);
-  //     throw new RestError(404, 'User not found');
-  //   }
-  // }
+      this.logger.silly('Hashing password');
+      const hashedPassword = await argon2.hash(user.newPassword, { salt });
+      const newRecord = {
+        ...user,
+        salt: salt.toString('hex'),
+        password: hashedPassword,
+        isPasswordChanged: true,
+      };
+
+      const userRecord = await this.userModel.findByIdAndUpdate(user.id, newRecord, { new: true });
+      return userRecord;
+    } catch (error) {
+      this.logger.error(error);
+      throw new RestError(404, `An error occured ${error.message}`);
+    }
+  }
 }

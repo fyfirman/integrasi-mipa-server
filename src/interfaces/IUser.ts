@@ -13,3 +13,9 @@ export interface IUserInputDTO {
   name: string;
   major: string;
 }
+
+export interface changePasswordUserDTO {
+  id: string;
+  oldPassword: string;
+  newPassword: string;
+}
