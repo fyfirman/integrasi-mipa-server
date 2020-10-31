@@ -26,8 +26,9 @@ Soon
 
 ### Card Verification
 
-* Create record (Upload KTM) : `POST /cardVerification`
-* Verify record - Admin Only : `PUT /cardVerification`
+* Get all record : `GET /verification/card?skip=0&limit=10&purpose=VERIFY_HIMA_VOTE&major=TI`
+* Create record (Upload KTM) : `POST /verification/card`
+* Verify record - Admin Only : `PUT /verification/card`
 
 ### User
 
