@@ -31,7 +31,7 @@ export default class AuthService {
 
       return { user };
     } catch (error) {
-      throw new RestError(500, `An error occured : ${error.message}`);
+      throw new RestError(500, `An error occured : : ${error.message}`);
     }
   }
 
@@ -87,22 +87,38 @@ export default class AuthService {
 
   public async changePassword(user: changePasswordUserDTO): Promise<{ user: IUser }> {
     try {
-      const salt = randomBytes(32);
+      const userRecord = await this.userModel.findOne({ _id: user.id });
+      if (!userRecord) {
+        throw new RestError(404, 'User not found');
+      }
 
-      this.logger.silly('Hashing password');
-      const hashedPassword = await argon2.hash(user.newPassword, { salt });
-      const newRecord = {
-        ...user,
-        salt: salt.toString('hex'),
-        password: hashedPassword,
-        isPasswordChanged: true,
-      };
+      this.logger.silly('Checking password');
+      const validPassword = await argon2.verify(userRecord.password, user.oldPassword);
 
-      const userRecord = await this.userModel.findByIdAndUpdate(user.id, newRecord, { new: true });
-      return userRecord;
+      if (validPassword) {
+        const salt = randomBytes(32);
+
+        this.logger.silly('Hashing password');
+        const hashedPassword = await argon2.hash(user.newPassword, { salt });
+        const newRecord = {
+          ...user,
+          salt: salt.toString('hex'),
+          password: hashedPassword,
+          isPasswordChanged: true,
+        };
+
+        const newUserRecord = await this.userModel.findByIdAndUpdate(user.id, newRecord, {
+          new: true,
+        });
+        return newUserRecord;
+      }
+      throw new RestError(403, 'Wrong old password');
     } catch (error) {
       this.logger.error(error);
-      throw new RestError(404, `An error occured ${error.message}`);
+      throw new RestError(
+        error.statusCode ? error.statusCode : null,
+        `An error occured : ${error.message}`,
+      );
     }
   }
 }
