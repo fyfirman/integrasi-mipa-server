@@ -7,11 +7,13 @@ export interface ICardVerification {
   hasBeenVerified: boolean;
   isAccepted: boolean;
   purpose: string;
-  verifiedDate: Date;
+  major: string;
+  verifiedAt: Date;
 }
 
 export interface ICardVerificationInputDTO {
   userId: IUser['_id'];
   selfiePhotoPath: File;
   purpose: string;
+  major: string;
 }

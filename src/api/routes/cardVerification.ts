@@ -22,9 +22,9 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
-      const { purpose } = req.query;
+      const { purpose, major } = req.query;
 
-      const verificationRecords = await cardVerificationService.getAll(skip, limit, purpose);
+      const verificationRecords = await cardVerificationService.getAll(skip, limit, purpose, major);
 
       let message = '';
       if (verificationRecords !== null) {
@@ -76,6 +76,7 @@ export default (app: Router): void => {
           userId: req.user._id,
           selfiePhotoPath: req.file.path,
           purpose: req.body.purpose,
+          major: req.body.major,
         };
 
         const verificationRecord = await cardVerificationService.create(

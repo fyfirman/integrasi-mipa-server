@@ -2,6 +2,7 @@ import { Service, Inject } from 'typedi';
 import { ICardVerificationInputDTO, ICardVerification } from '../interfaces/ICardVerification';
 
 import { RestError } from '../helpers/error';
+import { purposeVerifConstant } from '../constant';
 
 @Service()
 export default class CardVerificationService {
@@ -15,13 +16,16 @@ export default class CardVerificationService {
     skip = 0,
     limit = 0,
     purpose = null,
+    major = null,
   ): Promise<{ cardVerifications: ICardVerification }> {
     try {
-      const verificationRecords = await this.cardVerificationModel
+      if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE) {
+        return this.cardVerificationModel.find({ purpose, major }).skip(skip).limit(limit);
+      }
+      return this.cardVerificationModel
         .find(purpose ? { purpose } : {})
         .skip(skip)
         .limit(limit);
-      return verificationRecords;
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
     }

@@ -24,6 +24,10 @@ const CardVerification = new mongoose.Schema(
       enum: ['ACTIVATE_ACCOUNT', 'VERIFY_BEM_VOTE', 'VERIFY_BPM_VOTE', 'VERIFY_HIMA_VOTE'],
       required: true,
     },
+    major: {
+      type: String,
+      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
+    },
     verifiedAt: {
       type: Date,
       default: null,
