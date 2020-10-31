@@ -5,7 +5,6 @@ const CardVerification = new mongoose.Schema(
   {
     userId: {
       type: String,
-      unique: true,
       required: true,
     },
     selfiePhotoPath: {
@@ -25,8 +24,9 @@ const CardVerification = new mongoose.Schema(
       enum: ['ACTIVATE_ACCOUNT', 'VERIFY_BEM_VOTE', 'VERIFY_BPM_VOTE', 'VERIFY_HIMA_VOTE'],
       required: true,
     },
-    verifiedDate: {
+    verifiedAt: {
       type: Date,
+      default: null,
     },
   },
   { timestamps: true },

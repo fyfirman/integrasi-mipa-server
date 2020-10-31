@@ -74,6 +74,7 @@ export default (app: Router): void => {
         const cardVerificationInput = {
           userId: req.user._id,
           selfiePhotoPath: req.file.path,
+          purpose: req.body.purpose,
         };
 
         const verificationRecord = await cardVerificationService.create(
