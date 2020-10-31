@@ -7,6 +7,10 @@ import { RestError } from '../helpers/error';
 export default class CardVerificationService {
   @Inject('cardVerificationModel') private cardVerificationModel;
 
+  @Inject('userModel') private userModel;
+
+  @Inject('logger') private logger;
+
   public async getAll(
     skip = 0,
     limit = 0,
@@ -50,8 +54,12 @@ export default class CardVerificationService {
     try {
       const results = await this.cardVerificationModel.updateOne(
         { _id },
-        { $set: { isAccepted, hasBeenVerified: true } },
+        { $set: { isAccepted, hasBeenVerified: true, verifiedAt: Date.now() } },
       );
+
+      this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then((res) => {
+        this.userModel.updateOne({ _id: res.userId }, { $set: { isVerified: isAccepted } });
+      });
 
       if (results.nModified === 0) {
         throw new RestError(404, 'Card verification record not found');
