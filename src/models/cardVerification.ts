@@ -20,6 +20,14 @@ const CardVerification = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    purpose: {
+      type: String,
+      enum: ['ACTIVATE_ACCOUNT', 'VERIFY_BEM_VOTE', 'VERIFY_BPM_VOTE', 'VERIFY_HIMA_VOTE'],
+      required: true,
+    },
+    verifiedDate: {
+      type: Date,
+    },
   },
   { timestamps: true },
 );
