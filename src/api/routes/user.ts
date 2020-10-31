@@ -44,27 +44,8 @@ export default (app: Router): void => {
     }
   });
 
-  route.get('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const userServiceInstance: UserService = Container.get(UserService);
-
-      let userRecord = null;
-      await userServiceInstance.get(req.params.id).then((result) => { userRecord = result; });
-
-      const user = userRecord.toObject();
-      Reflect.deleteProperty(user, 'password');
-      Reflect.deleteProperty(user, 'salt');
-
-      const message = 'User found';
-      res.json({ success: true, message, data: { user } }).status(200);
-      logResponse(req, res, message);
-    } catch (error) {
-      next(error);
-    }
-  });
-
   route.get(
-    '/profile',
+    '/me',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
     async (req: Request, res: Response, next: NextFunction) => {
