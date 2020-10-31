@@ -116,7 +116,7 @@ export default class AuthService {
     } catch (error) {
       this.logger.error(error);
       throw new RestError(
-        error.statusCode ? error.statusCode : null,
+        error.statusCode ? error.statusCode : 404,
         `An error occured : ${error.message}`,
       );
     }
