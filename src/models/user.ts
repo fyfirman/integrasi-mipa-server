@@ -25,7 +25,7 @@ const User = new mongoose.Schema(
       enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
     },
   },
-  { timestamps: true },
+  { timestamps: false },
 );
 
 export default mongoose.model<IUser & mongoose.Document>('User', User);
