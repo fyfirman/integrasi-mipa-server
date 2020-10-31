@@ -3,7 +3,8 @@ import {
 } from 'express';
 import { Container } from 'typedi';
 import { celebrate, Joi } from 'celebrate';
-import { IUserInputDTO } from '../../interfaces/IUser';
+import { IUserInputDTO, changePasswordUserDTO } from '../../interfaces/IUser';
+import middlewares from '../middlewares';
 import AuthService from '../../services/auth';
 import logResponse from '../../helpers/logResponse';
 
@@ -62,6 +63,48 @@ export default (app: Router): void => {
 
         const message = 'Successfully logged in';
         res.json({ success: true, message, data: { user, token } }).status(200);
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  route.put(
+    '/changePassword',
+    celebrate({
+      body: Joi.object({
+        oldPassword: Joi.string().required().min(8),
+        newPassword: Joi.string().required().min(8),
+        confirmNewPassword: Joi.string()
+          .valid(Joi.ref('newPassword'))
+          .required()
+          .options({ messages: { 'any.only': '{{#label}} does not match' } }),
+      }),
+    }),
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const authServiceInstance: AuthService = Container.get(AuthService);
+
+        const userInput = {
+          id: req.user._id,
+          ...req.body,
+        };
+
+        let userRecord = null;
+        await authServiceInstance
+          .changePassword(userInput as changePasswordUserDTO)
+          .then((result) => {
+            userRecord = result;
+          });
+
+        const user = userRecord.toObject();
+        Reflect.deleteProperty(user, 'password');
+        Reflect.deleteProperty(user, 'salt');
+
+        const message = 'User password is successfully changed';
+        res.json({ success: true, message, data: { user } }).status(200);
         logResponse(req, res, message);
       } catch (error) {
         next(error);

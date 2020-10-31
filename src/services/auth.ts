@@ -3,7 +3,7 @@ import argon2 from 'argon2';
 import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 import { RestError } from '../helpers/error';
-import { IUser, IUserInputDTO } from '../interfaces/IUser';
+import { IUser, IUserInputDTO, changePasswordUserDTO } from '../interfaces/IUser';
 import config from '../config';
 
 @Service()
@@ -83,5 +83,26 @@ export default class AuthService {
       },
       config.jwtSecret,
     );
+  }
+
+  public async changePassword(user: changePasswordUserDTO): Promise<{ user: IUser }> {
+    try {
+      const salt = randomBytes(32);
+
+      this.logger.silly('Hashing password');
+      const hashedPassword = await argon2.hash(user.newPassword, { salt });
+      const newRecord = {
+        ...user,
+        salt: salt.toString('hex'),
+        password: hashedPassword,
+        isPasswordChanged: true,
+      };
+
+      const userRecord = await this.userModel.findByIdAndUpdate(user.id, newRecord, { new: true });
+      return userRecord;
+    } catch (error) {
+      this.logger.error(error);
+      throw new RestError(404, `An error occured ${error.message}`);
+    }
   }
 }
