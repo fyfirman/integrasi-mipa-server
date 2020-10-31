@@ -7,9 +7,16 @@ import { RestError } from '../helpers/error';
 export default class CardVerificationService {
   @Inject('cardVerificationModel') private cardVerificationModel;
 
-  public async getAll(skip = 0, limit = 0): Promise<{ cardVerifications: ICardVerification }> {
+  public async getAll(
+    skip = 0,
+    limit = 0,
+    purpose = null,
+  ): Promise<{ cardVerifications: ICardVerification }> {
     try {
-      const verificationRecords = await this.cardVerificationModel.find({}).skip(skip).limit(limit);
+      const verificationRecords = await this.cardVerificationModel
+        .find(purpose ? { purpose } : {})
+        .skip(skip)
+        .limit(limit);
       return verificationRecords;
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');

@@ -22,8 +22,9 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
+      const { purpose } = req.query;
 
-      const verificationRecords = await cardVerificationService.getAll(skip, limit);
+      const verificationRecords = await cardVerificationService.getAll(skip, limit, purpose);
 
       let message = '';
       if (verificationRecords !== null) {
