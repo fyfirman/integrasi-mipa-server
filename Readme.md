@@ -23,6 +23,7 @@ Soon
 ### Authentication
 
 * Login : `POST /auth/login`
+* Change password : `PUT auth/changePassword`
 
 ### Card Verification
 
@@ -32,22 +33,34 @@ Soon
 
 ### User
 
-* Change password : `PUT auth/changePassword`
+* Get self profile : `PUT user/me`
 
 ### Candidate
 
+#### KaBEM candidate
+
 * Get all KaBEM candidates              : `GET /candidate/bem`
-* Get all BPM candidates                : `GET /candidate/bpm`
-* Get all KaHim candidates              : `GET /candidate/hima?major=TI`
 * Get candidate                         : `GET /candidate/bem/:id`
-* Get candidate                         : `GET /candidate/bpm/:id`
-* Get candidate                         : `GET /candidate/hima/:id`
 * Input KaBEM candidate - Admin Only    : `POST /candidate/bem`
+* Update KaBEM candidate - Admin Only   : `PUT /candidate/bem`
+* Delete KaBEM candidate - Admin Only   : `DELETE /candidate/bem/:id`
+
+#### BPM candidate
+
+* Get all BPM candidates                : `GET /candidate/bpm`
+* Get candidate                         : `GET /candidate/bpm/:id`
 * Input BPM candidate - Admin Only      : `POST /candidate/bpm`
+* Update BPM candidate - Admin Only     : `PUT /candidate/bpm`
+* Delete candidate - Admin Only         : `DELETE /candidate/bpm/:id`
+
+#### Hima candidate
+
+* Get all KaHim candidates              : `GET /candidate/hima?major=TI`
+* Get candidate                         : `GET /candidate/hima/:id`
 * Input KaHim candidates - Admin Only   : `POST /candidate/hima`
-* Update candidate - Admin Only         : `PUT /candidate`
-* Delete candidate - Admin Only         : `DELETE /candidate`
-  
+* Update KaHim candidates - Admin Only  : `PUT /candidate/hima`
+* Delete candidate - Admin Only         : `DELETE /candidate/hima/:id`
+
 ### Vote
 
 * Vote candidate            : `POST /vote`
