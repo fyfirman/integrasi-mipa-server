@@ -37,7 +37,7 @@ export default (app: Router): void => {
         } else {
           const { user } = await authServiceInstance.SignUp(req.body as IUserInputDTO);
           const message = 'Created successfully';
-          res.json({ success: true, message, data: { user } }).status(201);
+          res.json({ success: true, message, data: user }).status(201);
           logResponse(req, res, message);
         }
       } catch (error) {
@@ -104,7 +104,7 @@ export default (app: Router): void => {
         Reflect.deleteProperty(user, 'salt');
 
         const message = 'User password is successfully changed';
-        res.json({ success: true, message, data: { user } }).status(200);
+        res.json({ success: true, message, data: user }).status(200);
         logResponse(req, res, message);
       } catch (error) {
         next(error);

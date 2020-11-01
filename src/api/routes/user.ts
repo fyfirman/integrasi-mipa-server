@@ -36,7 +36,7 @@ export default (app: Router): void => {
         .json({
           success: true,
           message,
-          data: { users: filteredUser },
+          data: filteredUser,
         })
         .status(200);
       logResponse(req, res, message);
@@ -52,7 +52,7 @@ export default (app: Router): void => {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const message = 'User found';
-        res.json({ success: true, message, data: { user: req.currentUser } }).status(200);
+        res.json({ success: true, message, data: req.currentUser }).status(200);
         logResponse(req, res, message);
       } catch (error) {
         next(error);

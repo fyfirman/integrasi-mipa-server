@@ -32,14 +32,14 @@ export default (app: Router): void => {
         res.status(200).json({
           success: true,
           message,
-          data: { verificationRecords },
+          data: verificationRecords,
         });
       } else {
         message = 'Card verification record not found';
         res.status(200).json({
           success: true,
           message,
-          data: { verificationRecords: [] },
+          data: [],
         });
       }
       logResponse(req, res, message);
@@ -55,10 +55,10 @@ export default (app: Router): void => {
       let message = '';
       if (cardVerificationRecord !== null) {
         message = 'Card verification record found';
-        res.status(200).json({ success: true, message, data: { cardVerificationRecord } });
+        res.status(200).json({ success: true, message, data: cardVerificationRecord });
       } else {
         message = 'Card verification record not found';
-        res.status(404).json({ success: false, message, data: { cardVerificationRecord } });
+        res.status(404).json({ success: false, message, data: cardVerificationRecord });
       }
       logResponse(req, res, message);
     } catch (error) {
@@ -87,7 +87,7 @@ export default (app: Router): void => {
         res.status(201).json({
           success: true,
           message,
-          data: { verificationRecord },
+          data: verificationRecord,
         });
         logResponse(req, res, message);
       } catch (error) {
@@ -121,31 +121,27 @@ export default (app: Router): void => {
     },
   );
 
-  route.delete(
-    '/',
-    middlewares.isAuth,
-    async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await cardVerificationService.delete(req.user._id);
-        let message = '';
-        if (result) {
-          message = 'Card verification record has been deleted';
-          res.status(200).json({
-            success: true,
-            message,
-          });
-        } else {
-          message = 'User not found. Record is not deleted';
-          res.status(404).json({
-            success: false,
-            message,
-          });
-        }
-
-        logResponse(req, res, message);
-      } catch (error) {
-        next(error);
+  route.delete('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await cardVerificationService.delete(req.user._id);
+      let message = '';
+      if (result) {
+        message = 'Card verification record has been deleted';
+        res.status(200).json({
+          success: true,
+          message,
+        });
+      } else {
+        message = 'User not found. Record is not deleted';
+        res.status(404).json({
+          success: false,
+          message,
+        });
       }
-    },
-  );
+
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
 };
