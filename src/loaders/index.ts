@@ -3,7 +3,7 @@ import depedencyInjectorLoader from './depedencyInjector';
 import expressLoader from './express';
 import mongooseLoader from './mongoose';
 import Logger from './logger';
-import { userModel, cardVerificationModel } from '../models';
+import { userModel, cardVerificationModel, kaBEMcandidateModel } from '../models';
 
 export default async ({ expressApp }: { expressApp: express.Application }): Promise<void> => {
   const mongoConnection = await mongooseLoader();
@@ -17,6 +17,10 @@ export default async ({ expressApp }: { expressApp: express.Application }): Prom
     {
       name: 'cardVerificationModel',
       model: cardVerificationModel,
+    },
+    {
+      name: 'kaBEMcandidateModel',
+      model: kaBEMcandidateModel,
     },
   ];
 

@@ -32,17 +32,21 @@ Soon
 
 ### User
 
-* Change password : `PUT user/password`
+* Change password : `PUT auth/changePassword`
 
 ### Candidate
 
-* Get all KaBEM candidates     : `GET /candidate/?type=bem`
-* Get all BPM candidates       : `GET /candidate/?type=bpm`
-* Get all KaHim candidates     : `GET /candidate/?type=hima&major=TI`
-* Get candidate                : `GET /candidate/:id`
-* Input candidate - Admin Only : `POST /candidate`
-* Update candidate - Admin Only : `PUT /candidate`
-* Delete candidate - Admin Only : `DELETE /candidate`
+* Get all KaBEM candidates              : `GET /candidate/bem`
+* Get all BPM candidates                : `GET /candidate/bpm`
+* Get all KaHim candidates              : `GET /candidate/hima?major=TI`
+* Get candidate                         : `GET /candidate/bem/:id`
+* Get candidate                         : `GET /candidate/bpm/:id`
+* Get candidate                         : `GET /candidate/hima/:id`
+* Input KaBEM candidate - Admin Only    : `POST /candidate/bem`
+* Input BPM candidate - Admin Only      : `POST /candidate/bpm`
+* Input KaHim candidates - Admin Only   : `POST /candidate/hima`
+* Update candidate - Admin Only         : `PUT /candidate`
+* Delete candidate - Admin Only         : `DELETE /candidate`
   
 ### Vote
 
