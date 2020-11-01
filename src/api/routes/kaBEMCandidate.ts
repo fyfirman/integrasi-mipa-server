@@ -30,7 +30,7 @@ export default (app: Router): void => {
       res.status(200).json({
         success: true,
         message,
-        data: { kaBEMCandidates },
+        data: kaBEMCandidates,
       });
       logResponse(req, res, message);
     } catch (error) {
@@ -57,7 +57,7 @@ export default (app: Router): void => {
         res.status(201).json({
           success: true,
           message,
-          data: { kaBEMCandidate },
+          data: kaBEMCandidate,
         });
         logResponse(req, res, message);
       } catch (error) {

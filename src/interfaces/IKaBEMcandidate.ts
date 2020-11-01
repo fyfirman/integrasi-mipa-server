@@ -1,16 +1,19 @@
+interface MissionItem {
+  title: string;
+  desc: string;
+}
+
+interface CandidateProfile {
+  name: string;
+  npm: string;
+  batchYear: number;
+}
+
 export interface IKaBEMcandidate {
   _id: string;
   number: number;
-  chairman: {
-    name: string;
-    npm: string;
-    batchYear: number;
-  };
-  viceChairman: {
-    name: string;
-    npm: string;
-    batchYear: number;
-  };
+  chairman: CandidateProfile;
+  viceChairman: CandidateProfile;
   vision: string;
   mission: string[];
   photoPath: string;
@@ -18,17 +21,9 @@ export interface IKaBEMcandidate {
 
 export interface IKaBEMcandidateDTO {
   number: number;
-  chairman: {
-    name: string;
-    npm: string;
-    batchYear: number;
-  };
-  viceChairman: {
-    name: string;
-    npm: string;
-    batchYear: number;
-  };
+  chairman: CandidateProfile;
+  viceChairman: CandidateProfile;
   vision: string;
-  mission: string[];
+  mission: MissionItem[];
   photoPath: string;
 }
