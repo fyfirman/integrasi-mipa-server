@@ -70,6 +70,7 @@ export default class KaBEMcandidateService {
       if (result.deletedCount === 1) {
         return true;
       }
+      return false;
     } catch (error) {
       throw new RestError(400, error.message);
     }

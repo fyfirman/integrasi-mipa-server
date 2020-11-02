@@ -38,6 +38,24 @@ export default (app: Router): void => {
     }
   });
 
+  route.get('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const kaBEMcandidate = await kaBEMcandidateService.get(req.params.id);
+
+      let message = '';
+      if (kaBEMcandidate !== null) {
+        message = 'Card verification record found';
+        res.status(200).json({ success: true, message, data: kaBEMcandidate });
+      } else {
+        message = 'Card verification record not found';
+        res.status(404).json({ success: false, message, data: kaBEMcandidate });
+      }
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
+
   route.post(
     '/',
     middlewares.isAuth,
