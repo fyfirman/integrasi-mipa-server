@@ -7,10 +7,9 @@ import { RestError } from '../helpers/error';
 export default class KaBEMcandidateService {
   @Inject('kaBEMcandidateModel') private kaBEMcandidateModel;
 
-  public async getAll(skip = 0, limit = 0): Promise<{ users: IKaBEMcandidate }> {
+  public async getAll(skip = 0, limit = 0): Promise<IKaBEMcandidate[]> {
     try {
-      const userRecords = await this.kaBEMcandidateModel.find({}).skip(skip).limit(limit).sort('number');
-      return userRecords;
+      return await this.kaBEMcandidateModel.find({}).skip(skip).limit(limit).sort('number');
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
     }
@@ -18,14 +17,13 @@ export default class KaBEMcandidateService {
 
   public async get(id: string): Promise<IKaBEMcandidate> {
     try {
-      const userRecord = await this.kaBEMcandidateModel.findById(id);
-      return userRecord;
+      return await this.kaBEMcandidateModel.findById(id);
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
     }
   }
 
-  public async create(input: IKaBEMcandidateDTO): Promise<{ kaBEMCandidate: IKaBEMcandidate }> {
+  public async create(input: IKaBEMcandidateDTO): Promise<IKaBEMcandidate> {
     try {
       return this.kaBEMcandidateModel.create(input);
     } catch (error) {
