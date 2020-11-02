@@ -9,7 +9,7 @@ export default class KaBEMcandidateService {
 
   public async getAll(skip = 0, limit = 0): Promise<{ users: IKaBEMcandidate }> {
     try {
-      const userRecords = await this.kaBEMcandidateModel.find({}).skip(skip).limit(limit);
+      const userRecords = await this.kaBEMcandidateModel.find({}).skip(skip).limit(limit).sort('number');
       return userRecords;
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
