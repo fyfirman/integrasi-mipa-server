@@ -44,10 +44,10 @@ export default (app: Router): void => {
 
       let message = '';
       if (kaBEMcandidate !== null) {
-        message = 'Card verification record found';
+        message = 'KaBEM candidate record found';
         res.status(200).json({ success: true, message, data: kaBEMcandidate });
       } else {
-        message = 'Card verification record not found';
+        message = 'KaBEM candidate record not found';
         res.status(404).json({ success: false, message, data: kaBEMcandidate });
       }
       logResponse(req, res, message);
@@ -114,4 +114,28 @@ export default (app: Router): void => {
       }
     },
   );
+
+  route.delete('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await kaBEMcandidateService.delete(req.params.id);
+      let message = '';
+      if (result) {
+        message = 'KaBEM Candidate record has been deleted';
+        res.status(200).json({
+          success: true,
+          message,
+        });
+      } else {
+        message = 'KaBEM Candidate not found. Record is not deleted';
+        res.status(404).json({
+          success: false,
+          message,
+        });
+      }
+
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
 };
