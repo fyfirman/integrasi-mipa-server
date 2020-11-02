@@ -4,7 +4,7 @@ import {
 } from 'express';
 
 import multer from 'multer';
-import { IKaBEMcandidateDTO } from '../../interfaces/IKaBEMcandidate';
+import { IKaBEMcandidate, IKaBEMcandidateDTO } from '../../interfaces/IKaBEMcandidate';
 import diskStorage from '../../config/multer';
 
 import middlewares from '../middlewares';
@@ -55,6 +55,37 @@ export default (app: Router): void => {
 
         const message = 'KaBEM Candidate record is created';
         res.status(201).json({
+          success: true,
+          message,
+          data: kaBEMCandidate,
+        });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  route.put(
+    '/',
+    middlewares.isAuth,
+    upload.single('photo'),
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        let candidateInput = {};
+        if (req.file !== undefined) {
+          candidateInput = {
+            ...req.body,
+            photoPath: req.file.path,
+          };
+        } else {
+          candidateInput = req.body;
+        }
+
+        const kaBEMCandidate = await kaBEMcandidateService.edit(candidateInput as IKaBEMcandidate);
+
+        const message = 'KaBEM Candidate record is updated';
+        res.status(200).json({
           success: true,
           message,
           data: kaBEMCandidate,

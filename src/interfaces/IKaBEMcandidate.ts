@@ -15,7 +15,7 @@ export interface IKaBEMcandidate {
   chairman: CandidateProfile;
   viceChairman: CandidateProfile;
   vision: string;
-  mission: string[];
+  mission: MissionItem[];
   photoPath: string;
 }
 

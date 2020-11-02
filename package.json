@@ -15,6 +15,7 @@
   "author": "fyfirman",
   "license": "ISC",
   "dependencies": {
+    "@types/lodash": "^4.14.164",
     "argon2": "^0.27.0",
     "body-parser": "^1.19.0",
     "celebrate": "^12.2.0",
@@ -22,6 +23,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.20",
     "mongodb": "^3.6.0",
     "mongoose": "^5.10.0",
     "multer": "^1.4.2",
