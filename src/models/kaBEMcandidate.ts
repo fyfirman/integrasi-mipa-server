@@ -23,8 +23,8 @@ const KaBEMcandidate = new mongoose.Schema(
   {
     number: {
       type: Number,
-      index: true,
       unique: true,
+      index: true,
       required: true,
     },
     chairman: candidateProfile,
