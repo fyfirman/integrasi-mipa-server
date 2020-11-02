@@ -111,7 +111,7 @@ export default (app: Router): void => {
         res.status(200).json({
           success: true,
           message,
-          verificationRecord,
+          data: verificationRecord,
         });
 
         logResponse(req, res, message);
