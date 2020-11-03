@@ -7,9 +7,12 @@ import { RestError } from '../helpers/error';
 export default class KaHimCandidateService {
   @Inject('kaHimCandidateModel') private kaHimCandidateModel;
 
-  public async getAll(skip = 0, limit = 0): Promise<IKaHimCandidate[]> {
+  public async getAll(skip = 0, limit = 0, major = null): Promise<IKaHimCandidate[]> {
     try {
-      return await this.kaHimCandidateModel.find({}).skip(skip).limit(limit).sort('number');
+      if (major === null) {
+        return await this.kaHimCandidateModel.find({}).skip(skip).limit(limit).sort('major');
+      }
+      return await this.kaHimCandidateModel.find({ major }).skip(skip).limit(limit).sort('number');
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
     }

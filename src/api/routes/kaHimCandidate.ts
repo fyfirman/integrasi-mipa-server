@@ -24,8 +24,9 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
+      const { major } = req.query;
 
-      const kaHimCandidates = await kaHimCandidateService.getAll(skip, limit);
+      const kaHimCandidates = await kaHimCandidateService.getAll(skip, limit, major);
       const message = 'KaHim candidates found';
       res.status(200).json({
         success: true,
