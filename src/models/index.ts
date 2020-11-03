@@ -4,3 +4,4 @@ export { default as cardVerificationModel } from './cardVerification';
 export { default as kaBEMcandidateModel } from './kaBEMcandidate';
 export { default as BPMCandidateModel } from './BPMCandidate';
 export { default as kaHimCandidateModel } from './kaHimCandidate';
+export { default as voteModel } from './vote';

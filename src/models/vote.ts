@@ -1,0 +1,29 @@
+import mongoose from 'mongoose';
+import { IVote } from '../interfaces/IVote';
+
+const Vote = new mongoose.Schema(
+  {
+    userId: {
+      type: String,
+      required: true,
+    },
+    candidateId: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ['BEM', 'BPM', 'HIMA'],
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true },
+);
+
+export default mongoose.model<IVote & mongoose.Document>(
+  'Vote',
+  Vote,
+);

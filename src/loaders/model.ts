@@ -4,6 +4,7 @@ import {
   kaBEMcandidateModel,
   BPMCandidateModel,
   kaHimCandidateModel,
+  voteModel,
 } from '../models';
 
 const models = [
@@ -26,6 +27,10 @@ const models = [
   {
     name: 'kaHimCandidateModel',
     model: kaHimCandidateModel,
+  },
+  {
+    name: 'voteModel',
+    model: voteModel,
   },
 ];
 
