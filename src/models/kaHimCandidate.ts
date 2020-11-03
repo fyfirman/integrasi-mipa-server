@@ -23,9 +23,12 @@ const KaHimCandidate = new mongoose.Schema(
   {
     number: {
       type: Number,
-      unique: true,
       index: true,
       required: true,
+    },
+    major: {
+      type: String,
+      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
     },
     chairman: candidateProfile,
     vision: {

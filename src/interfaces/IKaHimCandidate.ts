@@ -12,6 +12,7 @@ interface CandidateProfile {
 export interface IKaHimCandidate {
   _id: string;
   number: number;
+  major: string;
   chairman: CandidateProfile;
   vision: string;
   mission: MissionItem[];
@@ -20,6 +21,7 @@ export interface IKaHimCandidate {
 
 export interface IKaHimCandidateDTO {
   number: number;
+  major: string;
   chairman: CandidateProfile;
   vision: string;
   mission: MissionItem[];
