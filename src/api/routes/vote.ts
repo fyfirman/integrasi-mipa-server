@@ -2,6 +2,7 @@ import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
+import { RestError } from '../../helpers/error';
 import { IVote, IVoteDTO } from '../../interfaces/IVote';
 import middlewares from '../middlewares';
 import logResponse from '../../helpers/logResponse';
@@ -25,7 +26,7 @@ export default (app: Router): void => {
       if (type !== undefined) {
         result = await voteService.getResultByType(type);
       } else {
-        // result = await voteService.getAll();
+        throw new RestError(422, "Query param 'type' is required");
       }
 
       const message = 'Vote fetched successfully';

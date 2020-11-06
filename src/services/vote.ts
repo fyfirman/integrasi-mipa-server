@@ -1,23 +1,10 @@
 import { Service, Inject } from 'typedi';
-import {
-  IVoteTotalResult, IVoteDTO, IVote, IVoteResult,
-} from '../interfaces/IVote';
-import { IKaHimCandidate } from '../interfaces/IKaHimCandidate';
-import { IKaBEMcandidate } from '../interfaces/IKaBEMcandidate';
-import { IBPMCandidate } from '../interfaces/IBPMCandidate';
+import { IVoteTotalResult, IVoteDTO, IVote } from '../interfaces/IVote';
 import { RestError } from '../helpers/error';
 
 @Service()
 export default class VoteService {
   @Inject('voteModel') private voteModel;
-
-  @Inject('kaBEMcandidateModel') private kaBEMcandidateModel;
-
-  @Inject('BPMCandidateModel') private BPMCandidateModel;
-
-  @Inject('kaHimCandidateModel') private kaHimCandidateModel;
-
-  @Inject('logger') private logger;
 
   public async getResultByCandidate(candidateId: IVote['candidateId']): Promise<IVote[]> {
     try {
@@ -107,15 +94,4 @@ export default class VoteService {
       throw new RestError(500, `An error occured : ${error.message}`);
     }
   }
-
-  // public async delete(_id: string): Promise<boolean> {
-  //   try {
-  //     const result = await this.voteModel.deleteOne({ _id });
-  //     if (result.deletedCount === 1) {
-  //       return true;
-  //     }
-  //   } catch (error) {
-  //     throw new RestError(400, error.message);
-  //   }
-  // }
 }
