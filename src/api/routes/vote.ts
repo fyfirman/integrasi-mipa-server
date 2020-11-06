@@ -22,8 +22,7 @@ export default (app: Router): void => {
       let result;
       if (candidateId !== undefined) {
         result = await voteService.getResultByCandidate(candidateId);
-      }
-      if (type !== undefined) {
+      } else if (type !== undefined) {
         result = await voteService.getResultByType(type);
       } else {
         throw new RestError(422, "Query param 'type' is required");
