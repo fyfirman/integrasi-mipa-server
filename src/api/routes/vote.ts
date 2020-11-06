@@ -40,6 +40,26 @@ export default (app: Router): void => {
     }
   });
 
+  route.get(
+    '/self',
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await voteService.getVoteRecordByUser(req.user._id);
+
+        const message = 'Vote fetched successfully';
+        res.status(200).json({
+          success: true,
+          message,
+          data: result,
+        });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
   route.post('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const inputVoteDTO = { userId: req.user._id, ...req.body };

@@ -77,11 +77,34 @@ export default class VoteService {
     }
   }
 
+  public async getVoteRecordByUser(userId: IVote['userId']): Promise<IVote[]> {
+    try {
+      return await this.voteModel.find({ userId });
+    } catch (error) {
+      throw new RestError(500, `An error occured : ${error.message}`);
+    }
+  }
+
   public async create(vote: IVoteDTO): Promise<IVote> {
     try {
+      if (await this.isVoted(vote.userId, vote.type)) {
+        throw new RestError(400, `User has been voted on ${vote.type}`);
+      }
       return this.voteModel.create(vote);
     } catch (error) {
-      throw new RestError(500, `An error occured : : ${error.message}`);
+      throw new RestError(500, `An error occured : ${error.message}`);
+    }
+  }
+
+  public async isVoted(userId: IVoteDTO['userId'], type: IVoteDTO['type']): Promise<boolean> {
+    try {
+      const result = await this.voteModel.find({ userId, type });
+      if (result.length === 0) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      throw new RestError(500, `An error occured : ${error.message}`);
     }
   }
 
