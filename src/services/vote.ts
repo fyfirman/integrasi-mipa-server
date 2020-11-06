@@ -30,26 +30,10 @@ export default class VoteService {
             _id: '$candidateId',
             total: { $sum: 1 },
             totalUnverified: {
-              $sum: {
-                $cond: [
-                  {
-                    $eq: ['$isVerified', false],
-                  },
-                  1,
-                  0,
-                ],
-              },
+              $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
             },
             totalVerified: {
-              $sum: {
-                $cond: [
-                  {
-                    $eq: ['$votes.isVerified', true],
-                  },
-                  1,
-                  0,
-                ],
-              },
+              $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
             },
           },
         },
@@ -59,18 +43,18 @@ export default class VoteService {
     }
   }
 
-  private async getTotal(document, options = {}): Promise<IVoteTotalResult> {
+  public async getAll(options = {}): Promise<any> {
     try {
       const total = await this.voteModel.countDocuments(options);
-      const totalUnverified = await this.voteModel.countDocuments({
+      const totalUnverifiedssss = await this.voteModel.countDocuments({
         isVerified: false,
         ...options,
       });
       const totalVerified = await this.voteModel.countDocuments({ isVerified: true, ...options });
 
-      const voteResult: IVoteTotalResult = {
+      const voteResult = {
         total,
-        totalUnverified,
+        totalUnverifiedssss,
         totalVerified,
       };
 
