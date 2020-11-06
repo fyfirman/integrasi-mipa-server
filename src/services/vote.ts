@@ -14,7 +14,11 @@ export default class VoteService {
     }
   }
 
-  public async getResultByType(type: IVote['type']): Promise<IVoteTotalResult[]> {
+  public async getResultByType(
+    type: IVote['type'],
+    start?: Date,
+    end?: Date,
+  ): Promise<IVoteTotalResult[]> {
     let candidateCollection = '';
     switch (type) {
       case 'BEM':
@@ -29,10 +33,26 @@ export default class VoteService {
       default:
         break;
     }
+    let createdAt = {
+      $gte: start !== undefined ? start : new Date(),
+      $lt: end !== undefined ? end : new Date(),
+    };
+
+    if (start === undefined && end === undefined) {
+      createdAt = {
+        $gte: new Date(1970),
+        $lt: new Date(),
+      };
+    }
 
     try {
       return await this.voteModel.aggregate([
-        { $match: { type } },
+        {
+          $match: {
+            type,
+            createdAt,
+          },
+        },
         {
           $group: {
             _id: '$candidateId',

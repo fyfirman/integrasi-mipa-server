@@ -17,13 +17,19 @@ export default (app: Router): void => {
 
   route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { type, candidateId } = req.query;
+      const {
+        type, candidateId, start, end,
+      } = req.query;
 
       let result;
       if (candidateId !== undefined) {
         result = await voteService.getResultByCandidate(candidateId);
       } else if (type !== undefined) {
-        result = await voteService.getResultByType(type);
+        if (start !== undefined && end !== undefined) {
+          result = await voteService.getResultByType(type, new Date(start), new Date(end));
+        } else {
+          result = await voteService.getResultByType(type);
+        }
       } else {
         throw new RestError(422, "Query param 'type' is required");
       }
