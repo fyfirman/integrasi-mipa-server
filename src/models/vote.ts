@@ -8,7 +8,7 @@ const Vote = new mongoose.Schema(
       required: true,
     },
     candidateId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     type: {

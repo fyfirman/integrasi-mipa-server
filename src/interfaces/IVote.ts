@@ -18,6 +18,7 @@ export interface IVoteDTO {
 }
 
 export interface IVoteTotalResult {
+  _id: IKaBEMcandidate['_id'] | IKaHimCandidate['_id'] | IBPMCandidate['_id'];
   total: number;
   totalUnverified: number;
   totalVerified: number;

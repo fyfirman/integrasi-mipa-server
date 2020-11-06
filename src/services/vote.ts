@@ -2,12 +2,22 @@ import { Service, Inject } from 'typedi';
 import {
   IVoteTotalResult, IVoteDTO, IVote, IVoteResult,
 } from '../interfaces/IVote';
-
+import { IKaHimCandidate } from '../interfaces/IKaHimCandidate';
+import { IKaBEMcandidate } from '../interfaces/IKaBEMcandidate';
+import { IBPMCandidate } from '../interfaces/IBPMCandidate';
 import { RestError } from '../helpers/error';
 
 @Service()
 export default class VoteService {
   @Inject('voteModel') private voteModel;
+
+  @Inject('kaBEMcandidateModel') private kaBEMcandidateModel;
+
+  @Inject('BPMCandidateModel') private BPMCandidateModel;
+
+  @Inject('kaHimCandidateModel') private kaHimCandidateModel;
+
+  @Inject('logger') private logger;
 
   public async getResultByCandidate(candidateId: IVote['candidateId']): Promise<IVote[]> {
     try {
@@ -17,14 +27,10 @@ export default class VoteService {
     }
   }
 
-  public async getResultByType(type: IVote['type']): Promise<IVoteTotalResult> {
-    let filter = {};
-    if (type !== undefined) {
-      filter = { type };
-    }
+  public async getResultByType(type: IVote['type']): Promise<IVoteTotalResult[]> {
     try {
       return await this.voteModel.aggregate([
-        { $match: filter },
+        { $match: { type } },
         {
           $group: {
             _id: '$candidateId',
@@ -37,30 +43,22 @@ export default class VoteService {
             },
           },
         },
+        {
+          $lookup: {
+            from: 'bpmcandidates',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'candidates',
+          },
+        },
+        {
+          $addFields: {
+            candidates: { $arrayElemAt: ['$candidates', 0] },
+          },
+        },
       ]);
     } catch (error) {
       throw new RestError(500, `An error occured ${error.message}`);
-    }
-  }
-
-  public async getAll(options = {}): Promise<any> {
-    try {
-      const total = await this.voteModel.countDocuments(options);
-      const totalUnverifiedssss = await this.voteModel.countDocuments({
-        isVerified: false,
-        ...options,
-      });
-      const totalVerified = await this.voteModel.countDocuments({ isVerified: true, ...options });
-
-      const voteResult = {
-        total,
-        totalUnverifiedssss,
-        totalVerified,
-      };
-
-      return voteResult;
-    } catch (error) {
-      throw new RestError(404, `An error occured ${error.message}`);
     }
   }
 
