@@ -18,7 +18,16 @@ export default (app: Router): void => {
     try {
       const { type, candidateId } = req.query;
 
-      const result = await voteService.get(type, candidateId);
+      let result;
+      if (candidateId !== undefined) {
+        result = await voteService.getResultByCandidate(candidateId);
+      }
+      if (type !== undefined) {
+        result = await voteService.getResultByType(type);
+      } else {
+        // result = await voteService.getAll();
+      }
+
       const message = 'Vote fetched successfully';
       res.status(200).json({
         success: true,
