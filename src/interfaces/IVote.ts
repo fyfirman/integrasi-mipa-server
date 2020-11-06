@@ -15,5 +15,4 @@ export interface IVoteDTO {
   userId: IUser['_id'];
   candidateId: IKaBEMcandidate['_id'] | IKaHimCandidate['_id'] | IBPMCandidate['_id'];
   type: string;
-  isVerified: boolean;
 }

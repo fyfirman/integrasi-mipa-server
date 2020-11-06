@@ -9,7 +9,7 @@ export default class VoteService {
 
   public async get(type: IVote['type'], candidateId: IVote['candidateId']): Promise<IVote[]> {
     try {
-      return this.voteModel.get({ type, candidateId });
+      return this.voteModel.find({ type, candidateId });
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
     }

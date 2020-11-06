@@ -5,6 +5,7 @@ import cardVerification from './routes/cardVerification';
 import kaBEMCandidate from './routes/kaBEMCandidate';
 import BPMCandidate from './routes/BPMCandidate';
 import kaHimCandidate from './routes/kaHimCandidate';
+import vote from './routes/vote';
 
 export default (): Router => {
   const app = Router();
@@ -14,6 +15,7 @@ export default (): Router => {
   kaBEMCandidate(app);
   BPMCandidate(app);
   kaHimCandidate(app);
+  vote(app);
 
   return app;
 };
