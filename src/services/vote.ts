@@ -28,6 +28,21 @@ export default class VoteService {
   }
 
   public async getResultByType(type: IVote['type']): Promise<IVoteTotalResult[]> {
+    let candidateCollection = '';
+    switch (type) {
+      case 'BEM':
+        candidateCollection = 'kabemcandidates';
+        break;
+      case 'BPM':
+        candidateCollection = 'bpmcandidates';
+        break;
+      case 'HIMA':
+        candidateCollection = 'kahimcandidates';
+        break;
+      default:
+        break;
+    }
+
     try {
       return await this.voteModel.aggregate([
         { $match: { type } },
@@ -45,7 +60,7 @@ export default class VoteService {
         },
         {
           $lookup: {
-            from: 'bpmcandidates',
+            from: candidateCollection,
             localField: '_id',
             foreignField: '_id',
             as: 'candidates',
