@@ -5,6 +5,7 @@ import {
   BPMCandidateModel,
   kaHimCandidateModel,
   voteModel,
+  configurationModel,
 } from '../models';
 
 const models = [
@@ -31,6 +32,10 @@ const models = [
   {
     name: 'voteModel',
     model: voteModel,
+  },
+  {
+    name: 'configurationModel',
+    model: configurationModel,
   },
 ];
 
