@@ -6,6 +6,7 @@ import kaBEMCandidate from './routes/kaBEMCandidate';
 import BPMCandidate from './routes/BPMCandidate';
 import kaHimCandidate from './routes/kaHimCandidate';
 import vote from './routes/vote';
+import configuration from './routes/configuration';
 
 export default (): Router => {
   const app = Router();
@@ -16,6 +17,7 @@ export default (): Router => {
   BPMCandidate(app);
   kaHimCandidate(app);
   vote(app);
+  configuration(app);
 
   return app;
 };

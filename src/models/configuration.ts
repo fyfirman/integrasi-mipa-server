@@ -4,6 +4,7 @@ import { IConfiguration } from '../interfaces/IConfiguration';
 const Configuration = new mongoose.Schema({
   configName: {
     type: String,
+    unique: true,
     required: true,
   },
   isActive: {
