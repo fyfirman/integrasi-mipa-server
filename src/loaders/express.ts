@@ -6,7 +6,7 @@ import logRequest from '../helpers/logRequest';
 import config from '../config';
 import routes from '../api';
 
-export default ({ app }: { app: express.Application }) : void => {
+export default ({ app }: { app: express.Application }): void => {
   app.get('/status', (req, res) => {
     res.status(200).end();
   });
@@ -18,7 +18,11 @@ export default ({ app }: { app: express.Application }) : void => {
   app.use(bodyParser.json());
   app.use(logRequest);
 
-  app.use(config.api.prefix, routes());
+  if (config.mode === 'production') {
+    app.use(routes());
+  } else {
+    app.use(config.api.prefix, routes());
+  }
 
   app.use(errorHandler);
 };
