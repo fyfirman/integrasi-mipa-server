@@ -18,4 +18,5 @@ export default {
     level: process.env.LOG_LEVEL || 'silly',
   },
   jwtSecret: process.env.JWT_SECRET,
+  mode: process.env.NODE_ENV,
 };

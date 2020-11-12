@@ -17,7 +17,7 @@ const startServer = async () => {
       Logger.error(err);
       process.exit(1);
     }
-    Logger.info(`Server listening on port: ${config.port}`);
+    Logger.info(`Server listening on port: ${config.port} with ${config.mode} MODE`);
   });
 };
 
