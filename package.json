@@ -5,7 +5,7 @@
   "main": "App.js",
   "scripts": {
     "start": "pm2 start dist/app.js",
-    "build": "rm -rf dist && tsc",
+    "build": "rm -rf dist && tsc -p .",
     "build-docker": "docker build -t integrasi-mipa-server:0.0.1 .",
     "run-docker": "docker rm integrasi-mipa && docker run -p 3001:3001 -d --name integrasi-mipa integrasi-mipa-server:0.0.1",
     "dev": "nodemon src/app.ts",
