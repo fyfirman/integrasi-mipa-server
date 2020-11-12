@@ -23,15 +23,11 @@ const myformat = winston.format.combine(
 );
 
 const transports = [];
-if (process.env.NODE_ENV !== 'development') {
-  transports.push(new winston.transports.Console());
-} else {
-  transports.push(
-    new winston.transports.Console({
-      format: myformat,
-    }),
-  );
-}
+transports.push(
+  new winston.transports.Console({
+    format: myformat,
+  }),
+);
 
 const LoggerInstance = winston.createLogger({
   level: config.logs.level,
