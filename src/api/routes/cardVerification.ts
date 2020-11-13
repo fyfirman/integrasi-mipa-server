@@ -11,7 +11,7 @@ import CardVerificationService from '../../services/cardVerification';
 
 const route = Router();
 
-const upload = multer({ storage: diskStorage });
+const upload = multer({ storage: diskStorage, limits: { fieldSize: 2 * 1024 } });
 
 export default (app: Router): void => {
   app.use('/verification/card', route);
@@ -69,6 +69,7 @@ export default (app: Router): void => {
   route.post(
     '/',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
     upload.single('selfiePhoto'),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
