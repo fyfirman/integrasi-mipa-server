@@ -37,7 +37,7 @@ export default (app: Router): void => {
       } else {
         message = 'Card verification record not found';
         res.status(200).json({
-          success: true,
+          success: false,
           message,
           data: [],
         });

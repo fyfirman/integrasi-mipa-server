@@ -18,14 +18,32 @@ export default (app: Router): void => {
 
   route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await configurationService.getAll();
+      let message = '';
+      let result;
 
-      const message = 'Configurations found';
+      if (req.query.name === undefined) {
+        result = await configurationService.getAll();
+        message = 'Configurations found';
+      } else {
+        result = await configurationService.getByName(req.query.name);
+
+        if (result === null) {
+          message = 'Configuration not found';
+          res.status(404).json({
+            success: false,
+            message,
+          });
+        }
+
+        message = 'Configuration found';
+      }
+
       res.status(200).json({
         success: true,
         message,
         data: result,
       });
+
       logResponse(req, res, message);
     } catch (error) {
       next(error);
