@@ -9,7 +9,7 @@ const BPMcandidate = new mongoose.Schema(
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
+      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
     },
     batchYear: {
       type: Number,

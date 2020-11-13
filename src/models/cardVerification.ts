@@ -26,7 +26,7 @@ const CardVerification = new mongoose.Schema(
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
+      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
     },
     verifiedAt: {
       type: Date,
