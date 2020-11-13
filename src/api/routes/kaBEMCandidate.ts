@@ -13,7 +13,7 @@ import KaBEMcandidateService from '../../services/kaBEMCandidate';
 
 const route = Router();
 
-const upload = multer({ storage: diskStorage });
+const upload = multer({ storage: diskStorage.candidateStorage });
 
 export default (app: Router): void => {
   app.use('/candidate/bem', route);

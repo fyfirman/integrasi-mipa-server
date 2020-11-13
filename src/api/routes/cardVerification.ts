@@ -11,7 +11,10 @@ import CardVerificationService from '../../services/cardVerification';
 
 const route = Router();
 
-const upload = multer({ storage: diskStorage, limits: { fieldSize: 2 * 1024 } });
+const upload = multer({
+  storage: diskStorage.verification,
+  limits: { fieldSize: 2 * 1024 },
+});
 
 export default (app: Router): void => {
   app.use('/verification/card', route);

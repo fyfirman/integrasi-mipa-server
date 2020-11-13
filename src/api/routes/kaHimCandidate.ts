@@ -13,7 +13,7 @@ import KaHimCandidateService from '../../services/kaHimCandidate';
 
 const route = Router();
 
-const upload = multer({ storage: diskStorage });
+const upload = multer({ storage: diskStorage.candidateStorage });
 
 export default (app: Router): void => {
   app.use('/candidate/hima', route);
