@@ -18,10 +18,9 @@ export default (app: Router): void => {
     celebrate({
       body: Joi.object({
         npm: Joi.string().required(),
-        password: Joi.string().required(),
-        confirmPassword: Joi.string().required(),
         name: Joi.string().required(),
-        major: Joi.string().required(),
+        himaPermission: Joi.boolean().required(),
+        mipaPermission: Joi.boolean().required(),
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {

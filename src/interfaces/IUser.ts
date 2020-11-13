@@ -2,16 +2,20 @@ export interface IUser {
   _id: string;
   npm: string;
   password: string;
-  salt: string;
   name: string;
   major: string;
+  role: string;
+  isPasswordChanged: boolean;
+  isVerified: boolean;
+  himaPermission: boolean;
+  mipaPermission: boolean;
 }
 
 export interface IUserInputDTO {
   npm: string;
-  password: string;
   name: string;
-  major: string;
+  himaPermission: boolean;
+  mipaPermission: boolean;
 }
 
 export interface changePasswordUserDTO {

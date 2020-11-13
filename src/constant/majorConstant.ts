@@ -7,4 +7,5 @@ export default {
   AKTU: 'AKTU',
   KIM: 'KIM',
   GEO: 'GEO',
+  STAT: 'STAT',
 };

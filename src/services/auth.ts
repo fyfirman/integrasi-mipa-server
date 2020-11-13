@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { Service, Inject } from 'typedi';
 import argon2 from 'argon2';
 import { randomBytes } from 'crypto';
@@ -5,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { RestError } from '../helpers/error';
 import { IUser, IUserInputDTO, changePasswordUserDTO } from '../interfaces/IUser';
 import config from '../config';
+import { majorConstant } from '../constant';
 
 @Service()
 export default class AuthService {
@@ -17,10 +19,12 @@ export default class AuthService {
       const salt = randomBytes(32);
 
       this.logger.silly('Hashing password');
-      const hashedPassword = await argon2.hash(userInputDTO.password, { salt });
+      const hashedPassword = await argon2.hash(userInputDTO.npm, { salt });
+
       this.logger.silly('Creating user db record');
       const userRecord = await this.userModel.create({
         ...userInputDTO,
+        major: this.getMajorByNPM(userInputDTO.npm),
         salt: salt.toString('hex'),
         password: hashedPassword,
       });
@@ -31,7 +35,7 @@ export default class AuthService {
 
       return { user };
     } catch (error) {
-      throw new RestError(500, `An error occured : : ${error.message}`);
+      throw new RestError(500, `An error occured : ${error.message}`);
     }
   }
 
@@ -119,6 +123,34 @@ export default class AuthService {
         error.statusCode ? error.statusCode : 404,
         `An error occured : ${error.message}`,
       );
+    }
+  }
+
+  private getMajorByNPM(npm: IUser['npm']): string {
+    const initialNPM = npm.substring(2, 4);
+
+    this.logger.debug(initialNPM);
+    switch (initialNPM) {
+      case '01':
+        return majorConstant.MAT;
+      case '02':
+        return majorConstant.KIM;
+      case '03':
+        return majorConstant.FIS;
+      case '04':
+        return majorConstant.BIO;
+      case '06':
+        return majorConstant.STAT;
+      case '07':
+        return majorConstant.GEO;
+      case '08':
+        return majorConstant.TI;
+      case '09':
+        return majorConstant.TE;
+      case '10':
+        return majorConstant.AKTU;
+      default:
+        return '';
     }
   }
 }

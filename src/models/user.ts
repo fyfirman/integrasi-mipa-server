@@ -24,6 +24,14 @@ const User = new mongoose.Schema(
       type: String,
       enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO'],
     },
+    himaPermission: {
+      type: Boolean,
+      required: true,
+    },
+    mipaPermission: {
+      type: Boolean,
+      required: true,
+    },
     isPasswordChanged: {
       type: Boolean,
       default: false,
