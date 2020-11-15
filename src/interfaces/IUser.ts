@@ -27,6 +27,8 @@ export interface IUserSeederDTO {
   himaPermission: boolean;
   mipaPermission: boolean;
   salt: string;
+  isPasswordChanged: boolean;
+  isVerified: boolean;
 }
 
 export interface changePasswordUserDTO {

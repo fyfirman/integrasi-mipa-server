@@ -60,6 +60,8 @@ const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUse
     role,
     salt,
     password,
+    isPasswordChanged: isAdmin,
+    isVerified: isAdmin,
   };
   return result;
 };
