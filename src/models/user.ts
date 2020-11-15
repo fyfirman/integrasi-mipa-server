@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { majorConstant, roleConstant } from '../constant';
 import { IUser } from '../interfaces/IUser';
 
 const User = new mongoose.Schema(
@@ -17,12 +18,12 @@ const User = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['USER', 'ADMIN', 'ADMIN_MIPA'],
+      enum: Object.keys(roleConstant),
       default: 'USER',
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
+      enum: Object.keys(majorConstant),
     },
     himaPermission: {
       type: Boolean,

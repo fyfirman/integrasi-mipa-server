@@ -18,6 +18,17 @@ export interface IUserInputDTO {
   mipaPermission: boolean;
 }
 
+export interface IUserSeederDTO {
+  npm: string;
+  password: string;
+  name: string;
+  major: string;
+  role: string;
+  himaPermission: boolean;
+  mipaPermission: boolean;
+  salt: string;
+}
+
 export interface changePasswordUserDTO {
   id: string;
   oldPassword: string;
