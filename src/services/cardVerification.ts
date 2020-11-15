@@ -44,8 +44,18 @@ export default class CardVerificationService {
     record: ICardVerificationInputDTO,
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
-      const verificationRecord = await this.cardVerificationModel.create(record);
-      return verificationRecord;
+      return this.cardVerificationModel.create(record).then(async (res) => {
+        if (res.purpose === 'ACTIVATE_ACCOUNT') {
+          const result = await this.userModel.updateOne(
+            { _id: res.userId },
+            { $set: { hasUpload: true } },
+          );
+
+          if (result.nModified === 0) {
+            throw new RestError(400, 'Cannot update hasUpload on user model');
+          }
+        }
+      });
     } catch (error) {
       throw new RestError(400, error.message);
     }
@@ -61,8 +71,15 @@ export default class CardVerificationService {
         { $set: { isAccepted, hasBeenVerified: true, verifiedAt: Date.now() } },
       );
 
-      this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then((res) => {
-        this.userModel.updateOne({ _id: res.userId }, { $set: { isVerified: isAccepted } });
+      this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then(async (res) => {
+        const updateUser = await this.userModel.updateOne(
+          { _id: res.userId },
+          { $set: { isVerified: isAccepted } },
+        );
+
+        if (updateUser.nModified === 0) {
+          throw new RestError(400, 'Cannot update isVerified on user model');
+        }
       });
 
       if (results.nModified === 0) {

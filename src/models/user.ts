@@ -41,6 +41,10 @@ const User = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    hasUpload: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: false },
 );
