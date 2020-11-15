@@ -1,7 +1,7 @@
 import majorConstant from './majorConstant';
 
 export default {
-  '00': null,
+  '00': majorConstant.MIPA,
   '01': majorConstant.MAT,
   '02': majorConstant.KIM,
   '03': majorConstant.FIS,

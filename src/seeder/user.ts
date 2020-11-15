@@ -11,6 +11,7 @@ import StringHelper from '../helpers/StringHelper';
 import config from '../config';
 import majorNPM from '../constant/majorNPM';
 import roleConstant from '../constant/roleConstant';
+import { majorConstant } from '../constant';
 
 const formatData = (row): IUserInputDTO => ({
   npm: row.NPM,
@@ -41,9 +42,16 @@ const generatePassword = async (password: string): Promise<{ salt: string; passw
   };
 };
 
-const fillAttribute = async (user: IUserInputDTO): Promise<IUserSeederDTO> => {
+const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUserSeederDTO> => {
+  const getRole = (major) => {
+    if (isAdmin) {
+      return major === majorConstant.MIPA ? roleConstant.ADMIN_MIPA : roleConstant.ADMIN;
+    }
+    return roleConstant.USER;
+  };
+
   const major = majorNPM[user.npm.substring(2, 4)];
-  const role = roleConstant.USER;
+  const role = getRole(major);
   const { salt, password } = await generatePassword(user.npm);
 
   const result: IUserSeederDTO = {
@@ -62,19 +70,20 @@ const seed = (): void => {
     seeder.setLogOutput(false);
 
     seeder.clearModels(['User'], () => {
-      const callback = (users: IUserInputDTO[]): void => {
-        const seedData = (data: IUserSeederDTO[]) => {
-          const seederData = [{ model: 'User', documents: data }];
+      const callback = (users: IUserInputDTO[], isAdmin = false): void => {
+        Promise.all(users.map((user) => fillAttribute(user, isAdmin))).then((res) => {
+          console.log(
+            `Read ${res.length} ${
+              res[0].major === majorConstant.MIPA ? 'ADMIN' : res[0].major
+            } data`,
+          );
+          const seederData = [{ model: 'User', documents: res }];
 
           seeder.populateModels(seederData, () => {
-            console.log(`${data[0].major} successfully seeded`);
+            console.log(
+              `${res[0].major === majorConstant.MIPA ? 'ADMIN' : res[0].major} successfully seeded`,
+            );
           });
-        };
-
-        Promise.all(users.map((user) => fillAttribute(user))).then((res) => {
-          seedData(res);
-
-          console.log(`Read ${res.length} ${res[0].major} data`);
         });
       };
 
@@ -87,6 +96,7 @@ const seed = (): void => {
       readCSV('himbio.csv', callback);
       readCSV('hmte.csv', callback);
       readCSV('pedra.csv', callback);
+      readCSV('admin.csv', (data) => callback(data, true));
     });
   });
 };
