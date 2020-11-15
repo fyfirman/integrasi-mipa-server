@@ -98,6 +98,7 @@ const seed = (): void => {
       readCSV('himbio.csv', callback);
       readCSV('hmte.csv', callback);
       readCSV('pedra.csv', callback);
+      readCSV('test.csv', callback);
       readCSV('admin.csv', (data) => callback(data, true));
     });
   });
