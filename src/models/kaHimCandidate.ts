@@ -30,7 +30,7 @@ const KaHimCandidate = new mongoose.Schema(
       enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
     },
     chairman: candidateProfile,
-    isHasViceChairman: { type: Boolean },
+    hasViceChairman: { type: Boolean },
     viceChairman: candidateProfile,
     vision: {
       type: String,

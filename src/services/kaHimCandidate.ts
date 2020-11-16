@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Service, Inject } from 'typedi';
+import { IKaBEMcandidateDTO } from '../interfaces/IKaBEMcandidate';
 import { IKaHimCandidateDTO, IKaHimCandidate } from '../interfaces/IKaHimCandidate';
 import { RestError } from '../helpers/error';
 
@@ -28,7 +29,12 @@ export default class KaHimCandidateService {
 
   public async create(input: IKaHimCandidateDTO): Promise<IKaHimCandidate> {
     try {
-      return this.kaHimCandidateModel.create(input);
+      const modifiedInput = {
+        ...input,
+        hasViceChairman: input.viceChairman !== undefined,
+      };
+
+      return this.kaHimCandidateModel.create(modifiedInput);
     } catch (error) {
       throw new RestError(400, error.message);
     }
@@ -37,6 +43,10 @@ export default class KaHimCandidateService {
   public async edit(inputRecord: IKaHimCandidate): Promise<IKaHimCandidate> {
     try {
       const oldRecord: IKaHimCandidate = await this.get(inputRecord._id);
+      if (oldRecord === null) {
+        throw new RestError(404, `User with id ${inputRecord._id} not found`);
+      }
+
       const newRecord = _.merge(oldRecord, inputRecord);
 
       // Replacing null mission
