@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { majorConstant } from '../constant';
 import { IKaHimCandidate } from '../interfaces/IKaHimCandidate';
 
 const candidateProfile = new mongoose.Schema(
@@ -27,7 +28,7 @@ const KaHimCandidate = new mongoose.Schema(
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
+      enum: Object.keys(majorConstant),
     },
     chairman: candidateProfile,
     hasViceChairman: { type: Boolean },

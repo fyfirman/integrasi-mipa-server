@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/lodash": "^4.14.164",
     "argon2": "^0.27.0",
+    "base64-img": "^1.0.4",
     "body-parser": "^1.19.0",
     "celebrate": "^12.2.0",
     "cors": "^2.8.5",

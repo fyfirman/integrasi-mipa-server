@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { majorConstant } from '../constant';
 import { IBPMCandidate } from '../interfaces/IBPMCandidate';
 
 const BPMcandidate = new mongoose.Schema(
@@ -9,7 +10,7 @@ const BPMcandidate = new mongoose.Schema(
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
+      enum: Object.keys(majorConstant),
     },
     batchYear: {
       type: Number,

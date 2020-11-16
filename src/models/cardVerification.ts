@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import { majorConstant, purposeVerifConstant } from '../constant';
 import { ICardVerification } from '../interfaces/ICardVerification';
 
 const CardVerification = new mongoose.Schema(
   {
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     selfiePhotoPath: {
@@ -21,12 +22,12 @@ const CardVerification = new mongoose.Schema(
     },
     purpose: {
       type: String,
-      enum: ['ACTIVATE_ACCOUNT', 'VERIFY_BEM_VOTE', 'VERIFY_BPM_VOTE', 'VERIFY_HIMA_VOTE'],
+      enum: Object.keys(purposeVerifConstant),
       required: true,
     },
     major: {
       type: String,
-      enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
+      enum: Object.keys(majorConstant),
     },
     verifiedAt: {
       type: Date,

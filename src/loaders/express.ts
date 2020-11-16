@@ -15,7 +15,7 @@ export default ({ app }: { app: express.Application }): void => {
   });
 
   app.use(cors());
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({ limit: '50mb', extended: true }));
   app.use(logRequest);
 
   if (config.mode === 'production') {

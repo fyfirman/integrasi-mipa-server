@@ -73,12 +73,12 @@ export default (app: Router): void => {
     '/',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    upload.single('selfiePhoto'),
+    middlewares.uploadPhoto,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const cardVerificationInput = {
           userId: req.user._id,
-          selfiePhotoPath: req.file.path,
+          selfiePhotoPath: req.photoPath,
           purpose: req.body.purpose,
           major: req.body.major,
         };
