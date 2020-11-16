@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import { Service, Inject } from 'typedi';
-import { IKaBEMcandidateDTO } from '../interfaces/IKaBEMcandidate';
 import { IKaHimCandidateDTO, IKaHimCandidate } from '../interfaces/IKaHimCandidate';
 import { RestError } from '../helpers/error';
 
 @Service()
 export default class KaHimCandidateService {
   @Inject('kaHimCandidateModel') private kaHimCandidateModel;
+
+  @Inject('voteModel') private voteModel;
 
   public async getAll(skip = 0, limit = 0, major = null): Promise<IKaHimCandidate[]> {
     try {
@@ -77,6 +78,11 @@ export default class KaHimCandidateService {
 
   public async delete(_id: string): Promise<boolean> {
     try {
+      const candidateVote = await this.voteModel.find({ candidateId: _id });
+      if (candidateVote) {
+        throw new RestError(400, 'Candidate has vote record');
+      }
+
       const result = await this.kaHimCandidateModel.deleteOne({ _id });
       if (result.deletedCount === 1) {
         return true;

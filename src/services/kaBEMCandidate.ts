@@ -7,6 +7,8 @@ import { RestError } from '../helpers/error';
 export default class KaBEMcandidateService {
   @Inject('kaBEMcandidateModel') private kaBEMcandidateModel;
 
+  @Inject('voteModel') private voteModel;
+
   public async getAll(skip = 0, limit = 0): Promise<IKaBEMcandidate[]> {
     try {
       return await this.kaBEMcandidateModel.find({}).skip(skip).limit(limit).sort('number');
@@ -64,6 +66,11 @@ export default class KaBEMcandidateService {
 
   public async delete(_id: string): Promise<boolean> {
     try {
+      const candidateVote = await this.voteModel.find({ candidateId: _id });
+      if (candidateVote) {
+        throw new RestError(400, 'Candidate has vote record');
+      }
+
       const result = await this.kaBEMcandidateModel.deleteOne({ _id });
       if (result.deletedCount === 1) {
         return true;

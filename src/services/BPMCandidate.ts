@@ -7,6 +7,8 @@ import { RestError } from '../helpers/error';
 export default class BPMCandidateService {
   @Inject('BPMCandidateModel') private BPMCandidateModel;
 
+  @Inject('voteModel') private voteModel;
+
   public async getAll(skip = 0, limit = 0): Promise<IBPMCandidate[]> {
     try {
       return await this.BPMCandidateModel.find({}).skip(skip).limit(limit);
@@ -52,6 +54,11 @@ export default class BPMCandidateService {
 
   public async delete(_id: string): Promise<boolean> {
     try {
+      const candidateVote = await this.voteModel.find({ candidateId: _id });
+      if (candidateVote) {
+        throw new RestError(400, 'Candidate has vote record');
+      }
+
       const result = await this.BPMCandidateModel.deleteOne({ _id });
       if (result.deletedCount === 1) {
         return true;
