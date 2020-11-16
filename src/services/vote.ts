@@ -99,7 +99,8 @@ export default class VoteService {
       }
       return this.voteModel.create(vote);
     } catch (error) {
-      throw new RestError(500, `An error occured : ${error.message}`);
+      const statusCode = error.statusCode !== undefined ? error.statusCode : 500;
+      throw new RestError(statusCode, `An error occured : ${error.message}`);
     }
   }
 
