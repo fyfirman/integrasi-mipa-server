@@ -23,7 +23,6 @@ const KaHimCandidate = new mongoose.Schema(
   {
     number: {
       type: Number,
-      index: true,
       required: true,
     },
     major: {
@@ -31,6 +30,8 @@ const KaHimCandidate = new mongoose.Schema(
       enum: ['TI', 'TE', 'MAT', 'BIO', 'FIS', 'AKTU', 'KIM', 'GEO', 'STAT'],
     },
     chairman: candidateProfile,
+    isHasViceChairman: { type: Boolean },
+    viceChairman: candidateProfile,
     vision: {
       type: String,
       required: true,
@@ -46,6 +47,8 @@ const KaHimCandidate = new mongoose.Schema(
   },
   { timestamps: false },
 );
+
+KaHimCandidate.index({ number: 1, major: 1 }, { unique: true });
 
 export default mongoose.model<IKaHimCandidate & mongoose.Document>(
   'KaHimCandidate',
