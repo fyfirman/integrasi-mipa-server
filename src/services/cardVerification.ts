@@ -20,10 +20,11 @@ export default class CardVerificationService {
   ): Promise<{ cardVerifications: ICardVerification }> {
     try {
       if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE) {
-        return this.cardVerificationModel.find({ purpose, major }).skip(skip).limit(limit);
+        return this.cardVerificationModel.find({ purpose, major }).populate('user').skip(skip).limit(limit);
       }
       return this.cardVerificationModel
         .find(purpose ? { purpose } : {})
+        .populate('user')
         .skip(skip)
         .limit(limit);
     } catch (error) {
@@ -47,7 +48,7 @@ export default class CardVerificationService {
       return this.cardVerificationModel.create(record).then(async (res) => {
         if (res.purpose === 'ACTIVATE_ACCOUNT') {
           const result = await this.userModel.updateOne(
-            { _id: res.userId },
+            { _id: res.user },
             { $set: { hasUpload: true } },
           );
 
@@ -73,7 +74,7 @@ export default class CardVerificationService {
 
       this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then(async (res) => {
         const updateUser = await this.userModel.updateOne(
-          { _id: res.userId },
+          { _id: res.user },
           { $set: { isVerified: isAccepted } },
         );
 
@@ -92,9 +93,9 @@ export default class CardVerificationService {
     }
   }
 
-  public async delete(userId: string): Promise<boolean> {
+  public async delete(user: string): Promise<boolean> {
     try {
-      const result = await this.cardVerificationModel.deleteOne({ userId });
+      const result = await this.cardVerificationModel.deleteOne({ user });
       if (result.deletedCount === 1) {
         return true;
       }

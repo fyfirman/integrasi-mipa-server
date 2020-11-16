@@ -2,7 +2,7 @@ import { IUser } from './IUser';
 
 export interface ICardVerification {
   _id: string;
-  userId: IUser['_id'];
+  user: IUser['_id'];
   selfiePhotoPath: string;
   hasBeenVerified: boolean;
   isAccepted: boolean;
@@ -12,7 +12,7 @@ export interface ICardVerification {
 }
 
 export interface ICardVerificationInputDTO {
-  userId: IUser['_id'];
+  user: IUser['_id'];
   selfiePhotoPath: File;
   purpose: string;
   major: string;

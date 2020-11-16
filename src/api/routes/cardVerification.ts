@@ -77,7 +77,7 @@ export default (app: Router): void => {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const cardVerificationInput = {
-          userId: req.user._id,
+          user: req.user._id,
           selfiePhotoPath: req.photoPath,
           purpose: req.body.purpose,
           major: req.body.major,

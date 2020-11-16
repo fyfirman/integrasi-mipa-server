@@ -4,8 +4,9 @@ import { ICardVerification } from '../interfaces/ICardVerification';
 
 const CardVerification = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
     },
     selfiePhotoPath: {
