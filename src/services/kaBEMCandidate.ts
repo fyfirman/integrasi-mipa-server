@@ -67,7 +67,7 @@ export default class KaBEMcandidateService {
   public async delete(_id: string): Promise<boolean> {
     try {
       const candidateVote = await this.voteModel.find({ candidateId: _id });
-      if (candidateVote) {
+      if (candidateVote.length !== 0) {
         throw new RestError(400, 'Candidate has vote record');
       }
 
