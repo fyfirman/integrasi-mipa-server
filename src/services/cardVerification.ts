@@ -10,23 +10,26 @@ export default class CardVerificationService {
 
   @Inject('userModel') private userModel;
 
-  @Inject('logger') private logger;
-
   public async getAll(
     skip = 0,
     limit = 0,
     purpose = null,
     major = null,
+    isAccepted = null,
+    hasBeenVerified = null,
   ): Promise<{ cardVerifications: ICardVerification }> {
     try {
+      const options = {};
+
+      if (purpose) Object.assign(options, { purpose });
+      if (isAccepted) Object.assign(options, { isAccepted });
+      if (hasBeenVerified) Object.assign(options, { hasBeenVerified });
+
       if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE) {
-        return this.cardVerificationModel.find({ purpose, major }).populate('user').skip(skip).limit(limit);
+        if (major) Object.assign(options, { hasBeenVerified });
+        return this.cardVerificationModel.find(options).populate('user').skip(skip).limit(limit);
       }
-      return this.cardVerificationModel
-        .find(purpose ? { purpose } : {})
-        .populate('user')
-        .skip(skip)
-        .limit(limit);
+      return this.cardVerificationModel.find(options).populate('user').skip(skip).limit(limit);
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
     }
