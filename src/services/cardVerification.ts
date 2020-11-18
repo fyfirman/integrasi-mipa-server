@@ -28,7 +28,7 @@ export default class CardVerificationService {
         Object.assign(options, { hasBeenVerified });
       }
 
-      return this.cardVerificationModel.find(options).populate('user').skip(skip).limit(limit);
+      return this.cardVerificationModel.find(options).populate('user', 'npm name').skip(skip).limit(limit);
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
     }
@@ -36,7 +36,9 @@ export default class CardVerificationService {
 
   public async get(id: string): Promise<ICardVerification> {
     try {
-      const verificationRecord = await this.cardVerificationModel.findById(id);
+      const verificationRecord = await this.cardVerificationModel
+        .findById(id)
+        .populate('user', 'npm name');
       return verificationRecord;
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
@@ -48,7 +50,6 @@ export default class CardVerificationService {
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
       return this.cardVerificationModel.create(record).then(async (res) => {
-        console.log(`Created record with id ${res._id}`);
         if (res.purpose === 'ACTIVATE_ACCOUNT') {
           const result = await this.userModel.updateOne(
             { _id: res.user },
