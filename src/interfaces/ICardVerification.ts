@@ -13,7 +13,7 @@ export interface ICardVerification {
 
 export interface ICardVerificationInputDTO {
   user: IUser['_id'];
-  selfiePhotoPath: File;
+  selfiePhotoPath: string;
   purpose: string;
   major: string;
 }

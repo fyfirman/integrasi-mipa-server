@@ -1,20 +1,16 @@
+/* eslint-disable dot-notation */
 import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
-import multer from 'multer';
-import diskStorage from '../../config/multer';
-import middlewares from '../middlewares';
 import { ICardVerificationInputDTO } from '../../interfaces/ICardVerification';
+import { addBaseURL, removeDirName } from '../../helpers/urlHelper';
+import middlewares from '../middlewares';
+
 import logResponse from '../../helpers/logResponse';
 import CardVerificationService from '../../services/cardVerification';
 
 const route = Router();
-
-const upload = multer({
-  storage: diskStorage.verification,
-  limits: { fieldSize: 2 * 1024 },
-});
 
 export default (app: Router): void => {
   app.use('/verification/card', route);
@@ -38,13 +34,22 @@ export default (app: Router): void => {
         hasBeenVerified,
       );
 
+      // Replace record
+      const data = [];
+      verificationRecords.forEach((record) => {
+        data.push({
+          ...record['_doc'],
+          selfiePhotoPath: addBaseURL(record.selfiePhotoPath),
+        });
+      });
+
       let message = '';
       if (verificationRecords !== null) {
         message = 'Card verification record found';
         res.status(200).json({
           success: true,
           message,
-          data: verificationRecords,
+          data,
         });
       } else {
         message = 'Card verification record not found';
@@ -66,8 +71,13 @@ export default (app: Router): void => {
 
       let message = '';
       if (cardVerificationRecord !== null) {
+        const data = {
+          ...cardVerificationRecord['_doc'],
+          selfiePhotoPath: addBaseURL(cardVerificationRecord.selfiePhotoPath),
+        };
+
         message = 'Card verification record found';
-        res.status(200).json({ success: true, message, data: cardVerificationRecord });
+        res.status(200).json({ success: true, message, data });
       } else {
         message = 'Card verification record not found';
         res.status(404).json({ success: false, message, data: cardVerificationRecord });
@@ -87,7 +97,7 @@ export default (app: Router): void => {
       try {
         const cardVerificationInput = {
           user: req.user._id,
-          selfiePhotoPath: req.photoPath,
+          selfiePhotoPath: removeDirName(req.photoPath),
           purpose: req.body.purpose,
           major: req.body.major,
         };

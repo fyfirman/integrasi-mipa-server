@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import express from 'express';
+import path from 'path';
 import config from './config';
 import loaders from './loaders';
 import Logger from './loaders/logger';
@@ -8,7 +9,7 @@ import Logger from './loaders/logger';
 const startServer = async () => {
   const app = express();
 
-  app.use(express.static(__dirname));
+  app.use('/public', express.static(path.join(__dirname, '../public')));
 
   await loaders({ expressApp: app });
 

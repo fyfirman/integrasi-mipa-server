@@ -17,7 +17,7 @@ export default class CardVerificationService {
     major = null,
     isAccepted = null,
     hasBeenVerified = null,
-  ): Promise<{ cardVerifications: ICardVerification }> {
+  ): Promise<ICardVerification[]> {
     try {
       const options = {};
 
@@ -35,7 +35,7 @@ export default class CardVerificationService {
     }
   }
 
-  public async get(id: string): Promise<{ idCardVerification: ICardVerification }> {
+  public async get(id: string): Promise<ICardVerification> {
     try {
       const verificationRecord = await this.cardVerificationModel.findById(id);
       return verificationRecord;
