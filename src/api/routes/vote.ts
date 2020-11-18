@@ -103,4 +103,19 @@ export default (app: Router): void => {
       next(error);
     }
   });
+
+  route.delete('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await voteService.deleteAll(req.query.candidateId);
+      const message = `All vote record with candidateId ${req.query.candidateId} successfully deleted`;
+      res.status(200).json({
+        success: result,
+        message,
+      });
+
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
 };

@@ -135,4 +135,17 @@ export default class VoteService {
       throw new RestError(500, error.message);
     }
   }
+
+  public async deleteAll(candidateId: IVoteDTO['candidateId']): Promise<boolean> {
+    try {
+      const result = await this.voteModel.deleteMany({ candidateId });
+
+      if (result.deletedCount === 0) {
+        throw new RestError(400, 'Vote record not deleted');
+      }
+      return true;
+    } catch (error) {
+      throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
+    }
+  }
 }
