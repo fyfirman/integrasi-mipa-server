@@ -1,6 +1,10 @@
 import { Service, Inject } from 'typedi';
-import { IVoteTotalResult, IVoteDTO, IVote } from '../interfaces/IVote';
+import {
+  IVoteStatus, IVoteTotalResult, IVoteDTO, IVote,
+} from '../interfaces/IVote';
+
 import { RestError } from '../helpers/error';
+import voteTypeConstant from '../constant/voteTypeConstant';
 
 @Service()
 export default class VoteService {
@@ -88,7 +92,7 @@ export default class VoteService {
     try {
       return await this.voteModel.find({ userId });
     } catch (error) {
-      throw new RestError(500, `An error occured : ${error.message}`);
+      throw new RestError(500, error.message);
     }
   }
 
@@ -100,11 +104,11 @@ export default class VoteService {
       return this.voteModel.create(vote);
     } catch (error) {
       const statusCode = error.statusCode !== undefined ? error.statusCode : 500;
-      throw new RestError(statusCode, `An error occured : ${error.message}`);
+      throw new RestError(statusCode, error.message);
     }
   }
 
-  public async isVoted(userId: IVoteDTO['userId'], type: IVoteDTO['type']): Promise<boolean> {
+  private async isVoted(userId: IVoteDTO['userId'], type: IVoteDTO['type']): Promise<boolean> {
     try {
       const result = await this.voteModel.find({ userId, type });
       if (result.length === 0) {
@@ -112,7 +116,23 @@ export default class VoteService {
       }
       return true;
     } catch (error) {
-      throw new RestError(500, `An error occured : ${error.message}`);
+      throw new RestError(500, error.message);
+    }
+  }
+
+  public async getStatus(userId: IVoteDTO['userId']): Promise<IVoteStatus> {
+    try {
+      const resultBEM = await this.isVoted(userId, voteTypeConstant.BEM);
+      const resultBPM = await this.isVoted(userId, voteTypeConstant.BPM);
+      const resultHIMA = await this.isVoted(userId, voteTypeConstant.HIMA);
+
+      return {
+        bem: resultBEM,
+        bpm: resultBPM,
+        hima: resultHIMA,
+      };
+    } catch (error) {
+      throw new RestError(500, error.message);
     }
   }
 }

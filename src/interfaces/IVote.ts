@@ -27,3 +27,9 @@ export interface IVoteTotalResult {
 export interface IVoteResult extends IVoteTotalResult {
   candidate: IKaBEMcandidate | IKaHimCandidate | IBPMCandidate;
 }
+
+export interface IVoteStatus {
+  bem: boolean;
+  bpm: boolean;
+  hima: boolean;
+}

@@ -66,6 +66,26 @@ export default (app: Router): void => {
     },
   );
 
+  route.get(
+    '/status',
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await voteService.getStatus(req.user._id);
+
+        const message = 'Vote status fetched successfully';
+        res.status(200).json({
+          success: true,
+          message,
+          data: result,
+        });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
   route.post('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const inputVoteDTO = { userId: req.user._id, ...req.body };

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import voteTypeConstant from '../constant/voteTypeConstant';
 import { IVote } from '../interfaces/IVote';
 
 const Vote = new mongoose.Schema(
@@ -12,7 +13,7 @@ const Vote = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['BEM', 'BPM', 'HIMA'],
+      enum: Object.keys(voteTypeConstant),
     },
     isVerified: {
       type: Boolean,
@@ -22,7 +23,4 @@ const Vote = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model<IVote & mongoose.Document>(
-  'Vote',
-  Vote,
-);
+export default mongoose.model<IVote & mongoose.Document>('Vote', Vote);
