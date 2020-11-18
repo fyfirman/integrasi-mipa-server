@@ -92,6 +92,7 @@ export default (app: Router): void => {
     '/',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
+    middlewares.isUser,
     middlewares.uploadPhoto,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -122,6 +123,8 @@ export default (app: Router): void => {
   route.put(
     '/verify/:id',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isAdminHIMA,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         await cardVerificationService.verify(req.params.id, req.body.isAccepted);
