@@ -49,6 +49,8 @@ export default (app: Router): void => {
   route.get(
     '/self',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await voteService.getVoteRecordByUser(req.user._id);
@@ -69,6 +71,8 @@ export default (app: Router): void => {
   route.get(
     '/status',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await voteService.getStatus(req.user._id);
@@ -86,23 +90,29 @@ export default (app: Router): void => {
     },
   );
 
-  route.post('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const inputVoteDTO = { userId: req.user._id, ...req.body };
+  route.post(
+    '/',
+    middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isUser,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const inputVoteDTO = { userId: req.user._id, ...req.body };
 
-      const voteRecord: IVote = await voteService.create(inputVoteDTO as IVoteDTO);
+        const voteRecord: IVote = await voteService.create(inputVoteDTO as IVoteDTO);
 
-      const message = 'Vote record is created';
-      res.status(201).json({
-        success: true,
-        message,
-        data: voteRecord,
-      });
-      logResponse(req, res, message);
-    } catch (error) {
-      next(error);
-    }
-  });
+        const message = 'Vote record is created';
+        res.status(201).json({
+          success: true,
+          message,
+          data: voteRecord,
+        });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   route.delete('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
