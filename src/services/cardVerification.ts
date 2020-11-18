@@ -24,11 +24,10 @@ export default class CardVerificationService {
       if (purpose) Object.assign(options, { purpose });
       if (isAccepted) Object.assign(options, { isAccepted });
       if (hasBeenVerified) Object.assign(options, { hasBeenVerified });
-
-      if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE) {
-        if (major) Object.assign(options, { hasBeenVerified });
-        return this.cardVerificationModel.find(options).populate('user').skip(skip).limit(limit);
+      if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE && major) {
+        Object.assign(options, { hasBeenVerified });
       }
+
       return this.cardVerificationModel.find(options).populate('user').skip(skip).limit(limit);
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
@@ -83,10 +82,7 @@ export default class CardVerificationService {
         } else {
           updateData = { hasUpload: false };
         }
-        const updateUser = await this.userModel.updateOne(
-          { _id: res.user },
-          { $set: updateData },
-        );
+        const updateUser = await this.userModel.updateOne({ _id: res.user }, { $set: updateData });
 
         if (updateUser.nModified === 0) {
           throw new RestError(400, 'Cannot update isVerified on user model');
