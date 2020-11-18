@@ -1,9 +1,12 @@
+/* eslint-disable dot-notation */
 import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
 
 import multer from 'multer';
+import { removeDirName, addBaseURL } from '../../helpers/urlHelper';
+
 import { IBPMCandidate, IBPMCandidateDTO } from '../../interfaces/IBPMCandidate';
 import diskStorage from '../../config/multer';
 
@@ -26,11 +29,20 @@ export default (app: Router): void => {
       const limit = parseInt(req.query.limit, 10);
 
       const kaBEMCandidates = await BPMService.getAll(skip, limit);
+
+      const data = [];
+      kaBEMCandidates.forEach((record) => {
+        data.push({
+          ...record['_doc'],
+          photoPath: addBaseURL(record.photoPath),
+        });
+      });
+
       const message = 'BPM candidates found';
       res.status(200).json({
         success: true,
         message,
-        data: kaBEMCandidates,
+        data,
       });
       logResponse(req, res, message);
     } catch (error) {
@@ -44,8 +56,12 @@ export default (app: Router): void => {
 
       let message = '';
       if (kaBEMcandidate !== null) {
+        const data = {
+          ...kaBEMcandidate['_doc'],
+          photoPath: addBaseURL(kaBEMcandidate.photoPath),
+        };
         message = 'BPM candidate record found';
-        res.status(200).json({ success: true, message, data: kaBEMcandidate });
+        res.status(200).json({ success: true, message, data });
       } else {
         message = 'BPM candidate record not found';
         res.status(404).json({ success: false, message, data: kaBEMcandidate });
@@ -64,7 +80,7 @@ export default (app: Router): void => {
       try {
         const candidateInput = {
           ...req.body,
-          photoPath: req.file.path,
+          photoPath: removeDirName(req.file.path),
         };
 
         const kaBEMCandidate = await BPMService.create(candidateInput as IBPMCandidateDTO);
@@ -92,7 +108,7 @@ export default (app: Router): void => {
         if (req.file !== undefined) {
           candidateInput = {
             ...req.body,
-            photoPath: req.file.path,
+            photoPath: removeDirName(req.file.path),
           };
         } else {
           candidateInput = req.body;

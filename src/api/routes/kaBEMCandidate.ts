@@ -1,9 +1,12 @@
+/* eslint-disable dot-notation */
 import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
 
 import multer from 'multer';
+import { addBaseURL, removeDirName } from '../../helpers/urlHelper';
+
 import { IKaBEMcandidate, IKaBEMcandidateDTO } from '../../interfaces/IKaBEMcandidate';
 import diskStorage from '../../config/multer';
 
@@ -26,11 +29,20 @@ export default (app: Router): void => {
       const limit = parseInt(req.query.limit, 10);
 
       const kaBEMCandidates = await kaBEMcandidateService.getAll(skip, limit);
+
+      const data = [];
+      kaBEMCandidates.forEach((record) => {
+        data.push({
+          ...record['_doc'],
+          photoPath: addBaseURL(record.photoPath),
+        });
+      });
+
       const message = 'KaBEM candidates found';
       res.status(200).json({
         success: true,
         message,
-        data: kaBEMCandidates,
+        data,
       });
       logResponse(req, res, message);
     } catch (error) {
@@ -45,7 +57,11 @@ export default (app: Router): void => {
       let message = '';
       if (kaBEMcandidate !== null) {
         message = 'KaBEM candidate record found';
-        res.status(200).json({ success: true, message, data: kaBEMcandidate });
+        const data = {
+          ...kaBEMcandidate['_doc'],
+          photoPath: addBaseURL(kaBEMcandidate.photoPath),
+        };
+        res.status(200).json({ success: true, message, data });
       } else {
         message = 'KaBEM candidate record not found';
         res.status(404).json({ success: false, message, data: kaBEMcandidate });
@@ -64,7 +80,7 @@ export default (app: Router): void => {
       try {
         const candidateInput = {
           ...req.body,
-          photoPath: req.file.path,
+          photoPath: removeDirName(req.file.path),
         };
 
         const kaBEMCandidate = await kaBEMcandidateService.create(
@@ -94,7 +110,7 @@ export default (app: Router): void => {
         if (req.file !== undefined) {
           candidateInput = {
             ...req.body,
-            photoPath: req.file.path,
+            photoPath: removeDirName(req.file.path),
           };
         } else {
           candidateInput = req.body;
@@ -115,27 +131,31 @@ export default (app: Router): void => {
     },
   );
 
-  route.delete('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await kaBEMcandidateService.delete(req.params.id);
-      let message = '';
-      if (result) {
-        message = 'KaBEM Candidate record has been deleted';
-        res.status(200).json({
-          success: true,
-          message,
-        });
-      } else {
-        message = 'KaBEM Candidate not found. Record is not deleted';
-        res.status(404).json({
-          success: false,
-          message,
-        });
-      }
+  route.delete(
+    '/:id',
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const result = await kaBEMcandidateService.delete(req.params.id);
+        let message = '';
+        if (result) {
+          message = 'KaBEM Candidate record has been deleted';
+          res.status(200).json({
+            success: true,
+            message,
+          });
+        } else {
+          message = 'KaBEM Candidate not found. Record is not deleted';
+          res.status(404).json({
+            success: false,
+            message,
+          });
+        }
 
-      logResponse(req, res, message);
-    } catch (error) {
-      next(error);
-    }
-  });
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 };

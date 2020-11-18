@@ -1,9 +1,12 @@
+/* eslint-disable dot-notation */
 import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
 
 import multer from 'multer';
+import { removeDirName, addBaseURL } from '../../helpers/urlHelper';
+
 import { IKaHimCandidate, IKaHimCandidateDTO } from '../../interfaces/IKaHimCandidate';
 import diskStorage from '../../config/multer';
 
@@ -27,11 +30,20 @@ export default (app: Router): void => {
       const { major } = req.query;
 
       const kaHimCandidates = await kaHimCandidateService.getAll(skip, limit, major);
+
+      const data = [];
+      kaHimCandidates.forEach((record) => {
+        data.push({
+          ...record['_doc'],
+          photoPath: addBaseURL(record.photoPath),
+        });
+      });
+
       const message = 'KaHim candidates found';
       res.status(200).json({
         success: true,
         message,
-        data: kaHimCandidates,
+        data,
       });
       logResponse(req, res, message);
     } catch (error) {
@@ -46,7 +58,11 @@ export default (app: Router): void => {
       let message = '';
       if (kaHimCandidate !== null) {
         message = 'KaHim candidate record found';
-        res.status(200).json({ success: true, message, data: kaHimCandidate });
+        const data = {
+          ...kaHimCandidate['_doc'],
+          selfiePhotoPath: addBaseURL(kaHimCandidate.photoPath),
+        };
+        res.status(200).json({ success: true, message, data });
       } else {
         message = 'KaHim candidate record not found';
         res.status(404).json({ success: false, message, data: kaHimCandidate });
@@ -65,7 +81,7 @@ export default (app: Router): void => {
       try {
         const candidateInput = {
           ...req.body,
-          photoPath: req.file.path,
+          photoPath: removeDirName(req.file.path),
         };
 
         const kaHimCandidate = await kaHimCandidateService.create(
@@ -95,7 +111,7 @@ export default (app: Router): void => {
         if (req.file !== undefined) {
           candidateInput = {
             ...req.body,
-            photoPath: req.file.path,
+            photoPath: removeDirName(req.file.path),
           };
         } else {
           candidateInput = req.body;
