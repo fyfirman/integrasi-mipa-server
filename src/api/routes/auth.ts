@@ -13,6 +13,8 @@ const route = Router();
 export default (app: Router): void => {
   app.use('/auth', route);
 
+  const authServiceInstance: AuthService = Container.get(AuthService);
+
   route.post(
     '/register',
     celebrate({
@@ -25,8 +27,6 @@ export default (app: Router): void => {
     }),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const authServiceInstance: AuthService = Container.get(AuthService);
-
         if (req.query.check === 'true' || req.query.check === '') {
           const isRegistered = await authServiceInstance.checkRegistered(req.body.npm);
 
@@ -56,7 +56,6 @@ export default (app: Router): void => {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { npm, password } = req.body;
-        const authServiceInstance: AuthService = Container.get(AuthService);
 
         const { user, token } = await authServiceInstance.SignIn(npm, password);
 
@@ -84,8 +83,6 @@ export default (app: Router): void => {
     middlewares.isAuth,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const authServiceInstance: AuthService = Container.get(AuthService);
-
         const userInput = {
           id: req.user._id,
           ...req.body,
