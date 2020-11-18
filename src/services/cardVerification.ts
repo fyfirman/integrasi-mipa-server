@@ -49,6 +49,7 @@ export default class CardVerificationService {
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
       return this.cardVerificationModel.create(record).then(async (res) => {
+        console.log(`Created record with id ${res._id}`);
         if (res.purpose === 'ACTIVATE_ACCOUNT') {
           const result = await this.userModel.updateOne(
             { _id: res.user },
@@ -76,9 +77,15 @@ export default class CardVerificationService {
       );
 
       this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then(async (res) => {
+        let updateData = {};
+        if (isAccepted) {
+          updateData = { isVerified: true };
+        } else {
+          updateData = { hasUpload: false };
+        }
         const updateUser = await this.userModel.updateOne(
           { _id: res.user },
-          { $set: { isVerified: isAccepted } },
+          { $set: updateData },
         );
 
         if (updateUser.nModified === 0) {
