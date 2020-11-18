@@ -60,7 +60,7 @@ export default (app: Router): void => {
         message = 'KaHim candidate record found';
         const data = {
           ...kaHimCandidate['_doc'],
-          selfiePhotoPath: addBaseURL(kaHimCandidate.photoPath),
+          photoPath: addBaseURL(kaHimCandidate.photoPath),
         };
         res.status(200).json({ success: true, message, data });
       } else {
@@ -88,11 +88,16 @@ export default (app: Router): void => {
           candidateInput as IKaHimCandidateDTO,
         );
 
+        const data = {
+          ...kaHimCandidate['_doc'],
+          photoPath: addBaseURL(kaHimCandidate.photoPath),
+        };
+
         const message = 'KaHim Candidate record is created';
         res.status(201).json({
           success: true,
           message,
-          data: kaHimCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {
@@ -119,11 +124,16 @@ export default (app: Router): void => {
 
         const kaHimCandidate = await kaHimCandidateService.edit(candidateInput as IKaHimCandidate);
 
+        const data = {
+          ...kaHimCandidate['_doc'],
+          photoPath: addBaseURL(kaHimCandidate.photoPath),
+        };
+
         const message = 'KaHim Candidate record is updated';
         res.status(200).json({
           success: true,
           message,
-          data: kaHimCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {

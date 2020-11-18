@@ -85,11 +85,16 @@ export default (app: Router): void => {
 
         const kaBEMCandidate = await BPMService.create(candidateInput as IBPMCandidateDTO);
 
+        const data = {
+          ...kaBEMCandidate['_doc'],
+          photoPath: addBaseURL(kaBEMCandidate.photoPath),
+        };
+
         const message = 'BPM candidate record is created';
         res.status(201).json({
           success: true,
           message,
-          data: kaBEMCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {
@@ -116,11 +121,16 @@ export default (app: Router): void => {
 
         const kaBEMCandidate = await BPMService.edit(candidateInput as IBPMCandidate);
 
+        const data = {
+          ...kaBEMCandidate,
+          photoPath: addBaseURL(kaBEMCandidate.photoPath),
+        };
+
         const message = 'BPM candidate record is updated';
         res.status(200).json({
           success: true,
           message,
-          data: kaBEMCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {

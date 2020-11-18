@@ -87,11 +87,16 @@ export default (app: Router): void => {
           candidateInput as IKaBEMcandidateDTO,
         );
 
+        const data = {
+          ...kaBEMCandidate['_doc'],
+          photoPath: addBaseURL(kaBEMCandidate.photoPath),
+        };
+
         const message = 'KaBEM Candidate record is created';
         res.status(201).json({
           success: true,
           message,
-          data: kaBEMCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {
@@ -118,11 +123,16 @@ export default (app: Router): void => {
 
         const kaBEMCandidate = await kaBEMcandidateService.edit(candidateInput as IKaBEMcandidate);
 
+        const data = {
+          ...kaBEMCandidate['_doc'],
+          photoPath: addBaseURL(kaBEMCandidate.photoPath),
+        };
+
         const message = 'KaBEM Candidate record is updated';
         res.status(200).json({
           success: true,
           message,
-          data: kaBEMCandidate,
+          data,
         });
         logResponse(req, res, message);
       } catch (error) {

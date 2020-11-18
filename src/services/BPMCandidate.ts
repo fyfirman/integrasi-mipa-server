@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 import _ from 'lodash';
 import { Service, Inject } from 'typedi';
 import { IBPMCandidate, IBPMCandidateDTO } from '../interfaces/IBPMCandidate';
@@ -35,7 +36,7 @@ export default class BPMCandidateService {
 
   public async edit(inputRecord: IBPMCandidate): Promise<IBPMCandidate> {
     try {
-      const oldRecord = this.get(inputRecord._id);
+      const oldRecord = await this.get(inputRecord._id);
 
       const results = await this.BPMCandidateModel.updateOne(
         { _id: inputRecord._id },
@@ -46,7 +47,7 @@ export default class BPMCandidateService {
         throw new RestError(404, 'Candidate record not found');
       }
 
-      return _.merge(oldRecord, inputRecord);
+      return { ...oldRecord['_doc'], ...inputRecord };
     } catch (error) {
       throw new RestError(error.statusCode ? error.statusCode : 400, error.message);
     }
