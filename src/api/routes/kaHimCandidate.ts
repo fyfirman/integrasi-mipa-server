@@ -77,7 +77,7 @@ export default (app: Router): void => {
     '/',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    middlewares.isAdminHima,
+    middlewares.isAdminHIMA,
     upload.single('photo'),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -112,7 +112,7 @@ export default (app: Router): void => {
     '/',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    middlewares.isAdminHima,
+    middlewares.isAdminHIMA,
     upload.single('photo'),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -150,7 +150,7 @@ export default (app: Router): void => {
     '/:id',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    middlewares.isAdminHima,
+    middlewares.isAdminHIMA,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await kaHimCandidateService.delete(req.params.id);

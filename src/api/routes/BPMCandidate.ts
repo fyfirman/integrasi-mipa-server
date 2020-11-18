@@ -75,6 +75,8 @@ export default (app: Router): void => {
   route.post(
     '/',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isAdminMIPA,
     upload.single('photo'),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -106,6 +108,8 @@ export default (app: Router): void => {
   route.put(
     '/',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isAdminMIPA,
     upload.single('photo'),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -142,6 +146,8 @@ export default (app: Router): void => {
   route.delete(
     '/:id',
     middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    middlewares.isAdminMIPA,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await BPMService.delete(req.params.id);
