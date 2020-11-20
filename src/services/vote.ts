@@ -1,4 +1,5 @@
 import { Service, Inject } from 'typedi';
+import moment from 'moment';
 import {
   IVoteStatus, IVoteTotalResult, IVoteDTO, IVote,
 } from '../interfaces/IVote';
@@ -33,15 +34,18 @@ export default class VoteService {
 
   public async getTotalResultByType(
     type: IVote['type'],
-    start?: Date,
-    end?: Date,
+    date?: Date,
   ): Promise<IVoteTotalResult[]> {
+    const createdAt = {
+      $gte: moment(date).toDate(),
+      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
+    };
     try {
       return this.voteModel.aggregate([
         {
           $match: {
             type,
-            // createdAt,
+            ...(date && { createdAt }),
           },
         },
         {
@@ -62,23 +66,12 @@ export default class VoteService {
     }
   }
 
-  public async getResultByType(
-    type: IVote['type'],
-    start?: Date,
-    end?: Date,
-  ): Promise<IVoteTotalResult[]> {
+  public async getResultByType(type: IVote['type'], date?: Date): Promise<IVoteTotalResult[]> {
     const candidateCollection = candidateCollectionMap[type];
-    let createdAt = {
-      $gte: start !== undefined ? start : new Date(),
-      $lt: end !== undefined ? end : new Date(),
+    const createdAt = {
+      $gte: moment(date).toDate(),
+      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
     };
-
-    if (start === undefined && end === undefined) {
-      createdAt = {
-        $gte: new Date(1970),
-        $lt: new Date(),
-      };
-    }
 
     try {
       return await this.voteModel
@@ -86,7 +79,7 @@ export default class VoteService {
           {
             $match: {
               type,
-              createdAt,
+              ...(date && { createdAt }),
             },
           },
           {
