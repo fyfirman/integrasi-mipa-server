@@ -18,6 +18,7 @@ export interface IKaHimCandidate {
   hasViceChairman: boolean;
   vision: string;
   mission: MissionItem[];
+  proker: string[];
   photoPath: string;
 }
 
@@ -28,5 +29,6 @@ export interface IKaHimCandidateDTO {
   viceChairman?: CandidateProfile;
   vision: string;
   mission: MissionItem[];
+  proker: string[];
   photoPath: string;
 }

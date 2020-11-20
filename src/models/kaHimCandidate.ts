@@ -30,6 +30,10 @@ const KaHimCandidate = new mongoose.Schema(
       type: String,
       enum: Object.keys(majorConstant),
     },
+    npm: {
+      type: String,
+      required: true,
+    },
     chairman: candidateProfile,
     hasViceChairman: { type: Boolean },
     viceChairman: candidateProfile,
@@ -39,6 +43,10 @@ const KaHimCandidate = new mongoose.Schema(
     },
     mission: {
       type: [{ _id: false, title: String, desc: String }],
+      required: true,
+    },
+    proker: {
+      type: [String],
       required: true,
     },
     photoPath: {
