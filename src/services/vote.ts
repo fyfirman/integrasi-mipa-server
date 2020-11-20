@@ -5,6 +5,7 @@ import {
 
 import { RestError } from '../helpers/error';
 import voteTypeConstant from '../constant/voteTypeConstant';
+import { candidateCollectionMap } from '../constant';
 
 @Service()
 export default class VoteService {
@@ -30,25 +31,18 @@ export default class VoteService {
     }
   }
 
+  // public async getTotalResultByType(
+  //   type: IVote['type'],
+  //   start?: Date,
+  //   end?: Date,
+  // ): Promise<IVoteTotalResult[]> {}
+
   public async getResultByType(
     type: IVote['type'],
     start?: Date,
     end?: Date,
   ): Promise<IVoteTotalResult[]> {
-    let candidateCollection = '';
-    switch (type) {
-      case 'BEM':
-        candidateCollection = 'kabemcandidates';
-        break;
-      case 'BPM':
-        candidateCollection = 'bpmcandidates';
-        break;
-      case 'HIMA':
-        candidateCollection = 'kahimcandidates';
-        break;
-      default:
-        break;
-    }
+    const candidateCollection = candidateCollectionMap[type];
     let createdAt = {
       $gte: start !== undefined ? start : new Date(),
       $lt: end !== undefined ? end : new Date(),
