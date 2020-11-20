@@ -1,5 +1,4 @@
 /* eslint-disable dot-notation */
-import _ from 'lodash';
 import { Service, Inject } from 'typedi';
 import { IBPMCandidate, IBPMCandidateDTO } from '../interfaces/IBPMCandidate';
 import { RestError } from '../helpers/error';
