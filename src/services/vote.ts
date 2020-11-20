@@ -81,46 +81,48 @@ export default class VoteService {
     }
 
     try {
-      return await this.voteModel.aggregate([
-        {
-          $match: {
-            type,
-            createdAt,
-          },
-        },
-        {
-          $group: {
-            _id: '$candidateId',
-            total: { $sum: 1 },
-            totalUnverified: {
-              $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
-            },
-            totalVerified: {
-              $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
+      return await this.voteModel
+        .aggregate([
+          {
+            $match: {
+              type,
+              createdAt,
             },
           },
-        },
-        {
-          $lookup: {
-            from: candidateCollection,
-            localField: '_id',
-            foreignField: '_id',
-            as: 'candidates',
-          },
-        },
-        {
-          $addFields: {
-            candidateNumber: {
-              $cond: [
-                { $ne: [{ $size: '$candidates' }, 0] },
-                { $arrayElemAt: ['$candidates.number', 0] },
-                0,
-              ],
+          {
+            $group: {
+              _id: '$candidateId',
+              total: { $sum: 1 },
+              totalUnverified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
+              },
+              totalVerified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
+              },
             },
-            candidates: { $arrayElemAt: ['$candidates', 0] },
           },
-        },
-      ]);
+          {
+            $lookup: {
+              from: candidateCollection,
+              localField: '_id',
+              foreignField: '_id',
+              as: 'candidates',
+            },
+          },
+          {
+            $addFields: {
+              candidateNumber: {
+                $cond: [
+                  { $ne: [{ $size: '$candidates' }, 0] },
+                  { $arrayElemAt: ['$candidates.number', 0] },
+                  0,
+                ],
+              },
+              candidates: { $arrayElemAt: ['$candidates', 0] },
+            },
+          },
+        ])
+        .sort('candidateNumber');
     } catch (error) {
       throw new RestError(500, `An error occured ${error.message}`);
     }
