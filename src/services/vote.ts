@@ -10,6 +10,18 @@ import voteTypeConstant from '../constant/voteTypeConstant';
 export default class VoteService {
   @Inject('voteModel') private voteModel;
 
+  public async create(vote: IVoteDTO): Promise<IVote> {
+    try {
+      if (await this.isVoted(vote.userId, vote.type)) {
+        throw new RestError(400, `User has been voted on ${vote.type}`);
+      }
+      return this.voteModel.create(vote);
+    } catch (error) {
+      const statusCode = error.statusCode !== undefined ? error.statusCode : 500;
+      throw new RestError(statusCode, error.message);
+    }
+  }
+
   public async getResultByCandidate(candidateId: IVote['candidateId']): Promise<IVote[]> {
     try {
       return this.voteModel.find({ candidateId });
@@ -93,18 +105,6 @@ export default class VoteService {
       return await this.voteModel.find({ userId });
     } catch (error) {
       throw new RestError(500, error.message);
-    }
-  }
-
-  public async create(vote: IVoteDTO): Promise<IVote> {
-    try {
-      if (await this.isVoted(vote.userId, vote.type)) {
-        throw new RestError(400, `User has been voted on ${vote.type}`);
-      }
-      return this.voteModel.create(vote);
-    } catch (error) {
-      const statusCode = error.statusCode !== undefined ? error.statusCode : 500;
-      throw new RestError(statusCode, error.message);
     }
   }
 
