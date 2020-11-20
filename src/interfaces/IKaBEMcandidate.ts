@@ -17,6 +17,7 @@ export interface IKaBEMcandidate {
   vision: string;
   mission: MissionItem[];
   photoPath: string;
+  proker: string[];
 }
 
 export interface IKaBEMcandidateDTO {
@@ -26,4 +27,5 @@ export interface IKaBEMcandidateDTO {
   vision: string;
   mission: MissionItem[];
   photoPath: string;
+  proker: string[];
 }

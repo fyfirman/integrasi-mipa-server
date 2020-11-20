@@ -37,6 +37,10 @@ const KaBEMcandidate = new mongoose.Schema(
       type: [{ _id: false, title: String, desc: String }],
       required: true,
     },
+    proker: {
+      type: [String],
+      required: true,
+    },
     photoPath: {
       type: String,
       required: true,

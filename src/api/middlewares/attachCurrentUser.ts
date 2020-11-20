@@ -13,7 +13,7 @@ const attachCurrentUser = async (
     const UserModel = Container.get('userModel') as mongoose.Model<IUser & mongoose.Document>;
     const userRecord = await UserModel.findById(req.user._id);
     if (!userRecord) {
-      throw new RestError(401, 'User not found');
+      throw new RestError(401, 'Error attaching user. Maybe token is expired. Please login again.');
     }
     const currentUser = userRecord.toObject();
     Reflect.deleteProperty(currentUser, 'password');
