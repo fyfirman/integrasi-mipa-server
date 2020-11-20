@@ -31,11 +31,36 @@ export default class VoteService {
     }
   }
 
-  // public async getTotalResultByType(
-  //   type: IVote['type'],
-  //   start?: Date,
-  //   end?: Date,
-  // ): Promise<IVoteTotalResult[]> {}
+  public async getTotalResultByType(
+    type: IVote['type'],
+    start?: Date,
+    end?: Date,
+  ): Promise<IVoteTotalResult[]> {
+    try {
+      return this.voteModel.aggregate([
+        {
+          $match: {
+            type,
+            // createdAt,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            totalUnverified: {
+              $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
+            },
+            totalVerified: {
+              $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
+            },
+          },
+        },
+      ]);
+    } catch (error) {
+      throw new RestError(500, error.message);
+    }
+  }
 
   public async getResultByType(
     type: IVote['type'],
@@ -85,6 +110,13 @@ export default class VoteService {
         },
         {
           $addFields: {
+            candidateNumber: {
+              $cond: [
+                { $ne: [{ $size: '$candidates' }, 0] },
+                { $arrayElemAt: ['$candidates.number', 0] },
+                0,
+              ],
+            },
             candidates: { $arrayElemAt: ['$candidates', 0] },
           },
         },
