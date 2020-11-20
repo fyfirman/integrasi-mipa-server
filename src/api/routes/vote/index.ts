@@ -1,50 +1,20 @@
 import { Container } from 'typedi';
-import {
-  Router, Request, Response, NextFunction,
-} from 'express';
-import { RestError } from '../../helpers/error';
-import { IVote, IVoteDTO } from '../../interfaces/IVote';
-import middlewares from '../middlewares';
-import logResponse from '../../helpers/logResponse';
-import VoteService from '../../services/vote';
+import { Router, Request, Response, NextFunction } from 'express';
+import { RestError } from '../../../helpers/error';
+import { IVote, IVoteDTO } from '../../../interfaces/IVote';
+import middlewares from '../../middlewares';
+import logResponse from '../../../helpers/logResponse';
+import VoteService from '../../../services/vote';
+import resultRouter from './result';
 
 const route = Router();
 
 export default (app: Router): void => {
+  resultRouter(route);
+
   app.use('/vote', route);
 
   const voteService: VoteService = Container.get(VoteService);
-
-  route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const {
-        type, candidateId, start, end,
-      } = req.query;
-
-      let result;
-      if (candidateId !== undefined) {
-        result = await voteService.getResultByCandidate(candidateId);
-      } else if (type !== undefined) {
-        if (start !== undefined && end !== undefined) {
-          result = await voteService.getResultByType(type, new Date(start), new Date(end));
-        } else {
-          result = await voteService.getResultByType(type);
-        }
-      } else {
-        throw new RestError(422, "Query param 'type' is required");
-      }
-
-      const message = 'Vote fetched successfully';
-      res.status(200).json({
-        success: true,
-        message,
-        data: result,
-      });
-      logResponse(req, res, message);
-    } catch (error) {
-      next(error);
-    }
-  });
 
   route.get(
     '/self',
