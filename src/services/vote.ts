@@ -12,6 +12,8 @@ import { candidateCollectionMap } from '../constant';
 export default class VoteService {
   @Inject('voteModel') private voteModel;
 
+  @Inject('userModel') private userModel;
+
   public async create(vote: IVoteDTO): Promise<IVote> {
     try {
       if (await this.isVoted(vote.userId, vote.type)) {
@@ -32,10 +34,7 @@ export default class VoteService {
     }
   }
 
-  public async getTotalResultByType(
-    type: IVote['type'],
-    date?: Date,
-  ): Promise<IVoteTotalResult[]> {
+  public async getTotalResultByType(type: IVote['type'], date?: Date): Promise<IVoteTotalResult[]> {
     const createdAt = {
       $gte: moment(date).toDate(),
       $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
@@ -154,6 +153,23 @@ export default class VoteService {
       };
     } catch (error) {
       throw new RestError(500, error.message);
+    }
+  }
+
+  public async getListStatus(type: IVote['type']): Promise<any> {
+    try {
+      return this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'vote',
+            let: { userId: '$_id' },
+            pipeline: [{ $match: { $expr: { $eq: ['$userId', '$$userId'] } } }],
+            as: 'votes',
+          },
+        },
+      ]);
+    } catch (error) {
+      throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
     }
   }
 
