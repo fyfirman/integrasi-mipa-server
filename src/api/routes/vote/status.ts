@@ -27,8 +27,9 @@ export default (voteRouter: Router): void => {
 
         const skip = parseInt(req.query.skip, 10);
         const limit = parseInt(req.query.limit, 10);
+        const { type } = req.params;
 
-        const result = await voteService.getListStatus(req.params.type, major, skip, limit);
+        const result = await voteService.getListStatus(type.toUpperCase(), major, skip, limit);
 
         const message = 'Vote status fetched successfully';
         res.status(200).json({

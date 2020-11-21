@@ -176,8 +176,17 @@ export default class VoteService {
                   $match: {
                     type,
                     $expr: {
-                      $eq: ['$$id', 'userId'],
+                      $eq: ['$$id', '$userId'],
                     },
+                  },
+                },
+                {
+                  $project: {
+                    _id: 0,
+                    type: 1,
+                    isVerified: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
                   },
                 },
               ],
@@ -186,7 +195,7 @@ export default class VoteService {
           },
           {
             $addFields: {
-              isVotedBEM: {
+              isVoted: {
                 $ne: [{ $size: '$votes' }, 0],
               },
             },
@@ -195,7 +204,8 @@ export default class VoteService {
             $project: {
               npm: 1,
               name: 1,
-              isVotedBEM: 1,
+              isVerified: 1,
+              isVoted: 1,
               votes: 1,
             },
           },
