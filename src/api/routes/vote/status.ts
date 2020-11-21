@@ -2,6 +2,7 @@ import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
+import { IUser } from '../../../interfaces/IUser';
 import { RestError } from '../../../helpers/error';
 import { IVote, IVoteDTO } from '../../../interfaces/IVote';
 import middlewares from '../../middlewares';
@@ -19,10 +20,15 @@ export default (voteRouter: Router): void => {
     '/',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    middlewares.isUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const result = await voteService.getListStatus(req.params.type);
+        const user: IUser = req.currentUser;
+        const major = req.query.major ? req.query.major : user.major;
+
+        const skip = parseInt(req.query.skip, 10);
+        const limit = parseInt(req.query.limit, 10);
+
+        const result = await voteService.getListStatus(req.params.type, major, skip, limit);
 
         const message = 'Vote status fetched successfully';
         res.status(200).json({

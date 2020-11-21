@@ -1,12 +1,13 @@
 import { Service, Inject } from 'typedi';
 import moment from 'moment';
+import { IUser } from '../interfaces/IUser';
 import {
   IVoteStatus, IVoteTotalResult, IVoteDTO, IVote,
 } from '../interfaces/IVote';
 
 import { RestError } from '../helpers/error';
 import voteTypeConstant from '../constant/voteTypeConstant';
-import { candidateCollectionMap } from '../constant';
+import { candidateCollectionMap, majorConstant } from '../constant';
 
 @Service()
 export default class VoteService {
@@ -156,18 +157,51 @@ export default class VoteService {
     }
   }
 
-  public async getListStatus(type: IVote['type']): Promise<any> {
+  public async getListStatus(
+    type: IVote['type'],
+    major: IUser['major'],
+    skip = 0,
+    limit = 10,
+  ): Promise<any> {
     try {
-      return this.userModel.aggregate([
-        {
-          $lookup: {
-            from: 'vote',
-            let: { userId: '$_id' },
-            pipeline: [{ $match: { $expr: { $eq: ['$userId', '$$userId'] } } }],
-            as: 'votes',
+      return this.userModel
+        .aggregate([
+          { $match: { ...(major !== majorConstant.MIPA && { major }) } },
+          {
+            $lookup: {
+              from: 'votes',
+              let: { id: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    type,
+                    $expr: {
+                      $eq: ['$$id', 'userId'],
+                    },
+                  },
+                },
+              ],
+              as: 'votes',
+            },
           },
-        },
-      ]);
+          {
+            $addFields: {
+              isVotedBEM: {
+                $ne: [{ $size: '$votes' }, 0],
+              },
+            },
+          },
+          {
+            $project: {
+              npm: 1,
+              name: 1,
+              isVotedBEM: 1,
+              votes: 1,
+            },
+          },
+        ])
+        .skip(skip)
+        .limit(limit);
     } catch (error) {
       throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
     }
