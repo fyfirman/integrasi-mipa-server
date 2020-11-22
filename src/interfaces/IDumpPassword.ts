@@ -1,12 +1,12 @@
 export interface IDumpPassword {
   _id: string;
-  user: string;
+  cardVerificationId: string;
   password: string;
   salt: string;
 }
 
 export interface IDumpPasswordDTO {
-  user: string;
+  cardVerificationId: string;
   password: string;
   salt: string;
 }

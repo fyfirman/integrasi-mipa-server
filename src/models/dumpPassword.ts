@@ -3,7 +3,7 @@ import { IDumpPassword } from '../interfaces/IDumpPassword';
 
 const DumpPassword = new mongoose.Schema(
   {
-    userId: {
+    cardVerificationId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
