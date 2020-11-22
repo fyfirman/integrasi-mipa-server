@@ -273,7 +273,7 @@ export default class VoteService {
   ): Promise<boolean> {
     try {
       const result = await this.cardVerificationModel.find({
-        userId,
+        user: userId,
         purpose,
         hasBeenVerified: false,
       });
