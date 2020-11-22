@@ -72,19 +72,21 @@ export default class CardVerificationService {
     newPassword: IDumpPasswordDTO['password'],
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
-      const userRecord = await this.userModel.findOne({ _id: record.user });
-      if (!userRecord) {
-        throw new RestError(404, 'User not found');
-      }
-      const validPassword = await argon2.verify(userRecord.password, oldPassword);
+      return this.cardVerificationModel.create(record).then(async (res) => {
+        if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
+          const userRecord = await this.userModel.findOne({ _id: record.user });
+          if (!userRecord) {
+            throw new RestError(404, 'User not found');
+          }
+          const validPassword = await argon2.verify(userRecord.password, oldPassword);
 
-      if (validPassword) {
-        return this.cardVerificationModel.create(record).then(async (res) => {
-          if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
+          if (validPassword) {
+            this.dumpPassword(res._id, newPassword);
             const result = await this.userModel.updateOne(
               { _id: res.user },
               { $set: { hasUpload: true } },
             );
+
             if (result.nModified === 0) {
               const user = await this.userModel.findOne({ _id: res.user });
               if (user.hasUpload) {
@@ -95,12 +97,10 @@ export default class CardVerificationService {
               }
               throw new RestError(500, 'Cannot update hasUpload on user model');
             }
-
-            this.dumpPassword(res._id, newPassword);
           }
-        });
-      }
-      throw new RestError(400, 'Invalid old password');
+          throw new RestError(400, 'Invalid old password');
+        }
+      });
     } catch (error) {
       throw new RestError(400, error.message);
     }
