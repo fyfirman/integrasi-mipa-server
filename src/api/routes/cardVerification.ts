@@ -1,6 +1,8 @@
 /* eslint-disable dot-notation */
 import { Container } from 'typedi';
-import { Router, Request, Response, NextFunction } from 'express';
+import {
+  Router, Request, Response, NextFunction,
+} from 'express';
 import { ICardVerificationInputDTO } from '../../interfaces/ICardVerification';
 import { addBaseURL, removeDirName } from '../../helpers/urlHelper';
 import middlewares from '../middlewares';
@@ -19,7 +21,9 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
-      const { purpose, major, isAccepted, hasBeenVerified } = req.query;
+      const {
+        purpose, major, isAccepted, hasBeenVerified,
+      } = req.query;
 
       const verificationRecords = await cardVerificationService.getAll(
         skip,
@@ -54,29 +58,6 @@ export default (app: Router): void => {
           message,
           data: [],
         });
-      }
-      logResponse(req, res, message);
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  route.get('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const cardVerificationRecord = await cardVerificationService.get(req.params.id);
-
-      let message = '';
-      if (cardVerificationRecord !== null) {
-        const data = {
-          ...cardVerificationRecord['_doc'],
-          selfiePhotoPath: addBaseURL(cardVerificationRecord.selfiePhotoPath),
-        };
-
-        message = 'Card verification record found';
-        res.status(200).json({ success: true, message, data });
-      } else {
-        message = 'Card verification record not found';
-        res.status(404).json({ success: false, message, data: cardVerificationRecord });
       }
       logResponse(req, res, message);
     } catch (error) {
@@ -122,6 +103,29 @@ export default (app: Router): void => {
       }
     },
   );
+
+  route.get('/:id', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const cardVerificationRecord = await cardVerificationService.get(req.params.id);
+
+      let message = '';
+      if (cardVerificationRecord !== null) {
+        const data = {
+          ...cardVerificationRecord['_doc'],
+          selfiePhotoPath: addBaseURL(cardVerificationRecord.selfiePhotoPath),
+        };
+
+        message = 'Card verification record found';
+        res.status(200).json({ success: true, message, data });
+      } else {
+        message = 'Card verification record not found';
+        res.status(404).json({ success: false, message, data: cardVerificationRecord });
+      }
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
 
   route.post(
     '/',
