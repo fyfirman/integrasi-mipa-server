@@ -219,19 +219,28 @@ export default class VoteService {
       const resultHIMA = await this.isVerified(userId, voteTypeConstant.HIMA);
 
       return {
-        bem: { hasVoted: hasVotedBEM, hasUpload: statusUploadBEM, isVerified: resultBEM },
-        bpm: { hasVoted: hasVotedBPM, hasUpload: statusUploadBPM, isVerified: resultBPM },
-        hima: { hasVoted: hasVotedHIMA, hasUpload: statusUploadHIMA, isVerified: resultHIMA },
+        bem: {
+          hasVoted: hasVotedBEM,
+          hasUpload: statusUploadBEM || resultBEM,
+          isVerified: resultBEM,
+        },
+        bpm: {
+          hasVoted: hasVotedBPM,
+          hasUpload: statusUploadBPM || resultBPM,
+          isVerified: resultBPM,
+        },
+        hima: {
+          hasVoted: hasVotedHIMA,
+          hasUpload: statusUploadHIMA || resultHIMA,
+          isVerified: resultHIMA,
+        },
       };
     } catch (error) {
       throw new RestError(500, error.message);
     }
   }
 
-  private async isVerified(
-    userId: IVote['userId'],
-    type: IVote['type'],
-  ): Promise<boolean> {
+  private async isVerified(userId: IVote['userId'], type: IVote['type']): Promise<boolean> {
     try {
       const result = await this.voteModel.find({
         userId,
