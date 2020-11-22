@@ -38,8 +38,6 @@ const CardVerification = new mongoose.Schema(
   { timestamps: true },
 );
 
-CardVerification.index({ user: 1, purpose: 1 }, { unique: true });
-
 export default mongoose.model<ICardVerification & mongoose.Document>(
   'CardVerification',
   CardVerification,
