@@ -16,7 +16,7 @@ export default (app: Router): void => {
 
   const configurationService: ConfigurationService = Container.get(ConfigurationService);
 
-  route.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
+  route.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
       let message = '';
       let result;
@@ -37,6 +37,24 @@ export default (app: Router): void => {
 
         message = 'Configuration found';
       }
+
+      res.status(200).json({
+        success: true,
+        message,
+        data: result,
+      });
+
+      logResponse(req, res, message);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  route.get('/workhour', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await configurationService.getWorkHour();
+
+      const message = 'Configuration found';
 
       res.status(200).json({
         success: true,

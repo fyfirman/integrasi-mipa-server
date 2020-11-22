@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation */
+/* eslint-disable class-methods-use-this */
 import { Service, Inject } from 'typedi';
 import { IConfiguration, IConfigurationDTO } from '../interfaces/IConfiguration';
 import { RestError } from '../helpers/error';
@@ -28,6 +30,33 @@ export default class ConfigurationService {
     } catch (error) {
       throw new RestError(500, `An error occured : ${error.message}`);
     }
+  }
+
+  public async getWorkHour(): Promise<any> {
+    try {
+      const result: IConfiguration = await this.configurationModel.findOne({
+        configName: 'WORK_HOUR',
+      });
+
+      const isInRange = this.isInRange();
+
+      return {
+        ...result['_doc'],
+        isInRange,
+        config: result.isActive,
+        isActive: result.isActive && isInRange,
+      };
+    } catch (error) {
+      throw new RestError(500, `An error occured : ${error.message}`);
+    }
+  }
+
+  private isInRange(): boolean {
+    const timeNow = new Date().toISOString();
+    const hour = parseInt(timeNow.substring(0, 2), 10);
+
+    if (hour > 0 && hour < 13) return true;
+    return false;
   }
 
   public async create(configuration: IConfigurationDTO): Promise<IConfiguration> {
