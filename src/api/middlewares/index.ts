@@ -3,6 +3,7 @@ import isAuth from './isAuth';
 import uploadPhoto from './uploadPhoto';
 import isAdminHIMA from './isAdminHIMA';
 import isAdminMIPA from './isAdminMIPA';
+import isAdmin from './isAdmin';
 import isUser from './isUser';
 
 export default {
@@ -12,4 +13,5 @@ export default {
   isAdminHIMA,
   isAdminMIPA,
   isUser,
+  isAdmin,
 };

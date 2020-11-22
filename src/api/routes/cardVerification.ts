@@ -124,7 +124,7 @@ export default (app: Router): void => {
     '/verify/:id',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
-    middlewares.isAdminHIMA,
+    middlewares.isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         await cardVerificationService.verify(req.params.id, req.body.isAccepted);
