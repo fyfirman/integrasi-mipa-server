@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 import { Service, Inject } from 'typedi';
 import moment from 'moment';
 import { IUser } from '../interfaces/IUser';
@@ -151,7 +152,7 @@ export default class VoteService {
     limit = 10,
   ): Promise<any> {
     try {
-      return this.userModel
+      const result = await this.userModel
         .aggregate([
           { $match: { ...(major !== majorConstant.MIPA && { major }) } },
           {
@@ -161,7 +162,6 @@ export default class VoteService {
               pipeline: [
                 {
                   $match: {
-                    type,
                     $expr: {
                       $eq: ['$$id', '$userId'],
                     },
@@ -181,18 +181,10 @@ export default class VoteService {
             },
           },
           {
-            $addFields: {
-              hasVoted: {
-                $ne: [{ $size: '$votes' }, 0],
-              },
-            },
-          },
-          {
             $project: {
               npm: 1,
               name: 1,
               isVerified: 1,
-              hasVoted: 1,
               votes: 1,
             },
           },
@@ -200,6 +192,24 @@ export default class VoteService {
         .sort('npm')
         .skip(skip)
         .limit(limit);
+
+      return result.map((value) => {
+        let hasVotedBPM = false;
+        let hasVotedBEM = false;
+        let hasVotedHIMA = false;
+        value.votes.forEach((element) => {
+          if (element.type === voteTypeConstant.BEM) hasVotedBEM = true;
+          if (element.type === voteTypeConstant.BPM) hasVotedBPM = true;
+          if (element.type === voteTypeConstant.HIMA) hasVotedHIMA = true;
+        });
+
+        return {
+          ...value,
+          hasVotedBEM,
+          hasVotedBPM,
+          hasVotedHIMA,
+        };
+      });
     } catch (error) {
       throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
     }
