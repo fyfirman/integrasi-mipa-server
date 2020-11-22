@@ -7,7 +7,8 @@ import {
 
 import { RestError } from '../helpers/error';
 import voteTypeConstant from '../constant/voteTypeConstant';
-import { candidateCollectionMap, majorConstant } from '../constant';
+import { candidateCollectionMap, majorConstant, purposeVerifConstant } from '../constant';
+import { ICardVerification } from '../interfaces/ICardVerification';
 
 @Service()
 export default class VoteService {
@@ -15,9 +16,11 @@ export default class VoteService {
 
   @Inject('userModel') private userModel;
 
+  @Inject('cardVerificationModel') private cardVerificationModel;
+
   public async create(vote: IVoteDTO): Promise<IVote> {
     try {
-      if (await this.isVoted(vote.userId, vote.type)) {
+      if (await this.hasVoted(vote.userId, vote.type)) {
         throw new RestError(400, `User has been voted on ${vote.type}`);
       }
       return this.voteModel.create(vote);
@@ -129,29 +132,13 @@ export default class VoteService {
     }
   }
 
-  private async isVoted(userId: IVoteDTO['userId'], type: IVoteDTO['type']): Promise<boolean> {
+  private async hasVoted(userId: IVoteDTO['userId'], type: IVoteDTO['type']): Promise<boolean> {
     try {
       const result = await this.voteModel.find({ userId, type });
       if (result.length === 0) {
         return false;
       }
       return true;
-    } catch (error) {
-      throw new RestError(500, error.message);
-    }
-  }
-
-  public async getStatus(userId: IVoteDTO['userId']): Promise<IVoteStatus> {
-    try {
-      const resultBEM = await this.isVoted(userId, voteTypeConstant.BEM);
-      const resultBPM = await this.isVoted(userId, voteTypeConstant.BPM);
-      const resultHIMA = await this.isVoted(userId, voteTypeConstant.HIMA);
-
-      return {
-        bem: resultBEM,
-        bpm: resultBPM,
-        hima: resultHIMA,
-      };
     } catch (error) {
       throw new RestError(500, error.message);
     }
@@ -195,7 +182,7 @@ export default class VoteService {
           },
           {
             $addFields: {
-              isVoted: {
+              hasVoted: {
                 $ne: [{ $size: '$votes' }, 0],
               },
             },
@@ -205,7 +192,7 @@ export default class VoteService {
               npm: 1,
               name: 1,
               isVerified: 1,
-              isVoted: 1,
+              hasVoted: 1,
               votes: 1,
             },
           },
@@ -214,6 +201,68 @@ export default class VoteService {
         .limit(limit);
     } catch (error) {
       throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
+    }
+  }
+
+  public async getStatus(userId: ICardVerification['user']): Promise<any> {
+    try {
+      const hasVotedBEM = await this.hasVoted(userId, voteTypeConstant.BEM);
+      const hasVotedBPM = await this.hasVoted(userId, voteTypeConstant.BPM);
+      const hasVotedHIMA = await this.hasVoted(userId, voteTypeConstant.HIMA);
+
+      const statusUploadBEM = await this.hasUpload(userId, purposeVerifConstant.VERIFY_BEM_VOTE);
+      const statusUploadBPM = await this.hasUpload(userId, purposeVerifConstant.VERIFY_BPM_VOTE);
+      const statusUploadHIMA = await this.hasUpload(userId, purposeVerifConstant.VERIFY_HIMA_VOTE);
+
+      const resultBEM = await this.isVerified(userId, voteTypeConstant.BEM);
+      const resultBPM = await this.isVerified(userId, voteTypeConstant.BPM);
+      const resultHIMA = await this.isVerified(userId, voteTypeConstant.HIMA);
+
+      return {
+        bem: { hasVoted: hasVotedBEM, hasUpload: statusUploadBEM, isVerified: resultBEM },
+        bpm: { hasVoted: hasVotedBPM, hasUpload: statusUploadBPM, isVerified: resultBPM },
+        hima: { hasVoted: hasVotedHIMA, hasUpload: statusUploadHIMA, isVerified: resultHIMA },
+      };
+    } catch (error) {
+      throw new RestError(500, error.message);
+    }
+  }
+
+  private async isVerified(
+    userId: IVote['userId'],
+    type: IVote['type'],
+  ): Promise<boolean> {
+    try {
+      const result = await this.voteModel.find({
+        userId,
+        type,
+        isVerified: true,
+      });
+      if (result.length === 0) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      throw new RestError(500, error.message);
+    }
+  }
+
+  private async hasUpload(
+    userId: ICardVerification['user'],
+    purpose: ICardVerification['purpose'],
+  ): Promise<boolean> {
+    try {
+      const result = await this.cardVerificationModel.find({
+        userId,
+        purpose,
+        hasBeenVerified: false,
+      });
+      if (result.length === 0) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      throw new RestError(500, error.message);
     }
   }
 
