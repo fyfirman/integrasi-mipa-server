@@ -2,7 +2,8 @@
 import argon2 from 'argon2';
 import { Service, Inject } from 'typedi';
 import { randomBytes } from 'crypto';
-import { IDumpPasswordDTO } from '../interfaces/IDumpPassword';
+import { IDumpPassword, IDumpPasswordDTO } from '../interfaces/IDumpPassword';
+
 import { IVote } from '../interfaces/IVote';
 import { ICardVerificationInputDTO, ICardVerification } from '../interfaces/ICardVerification';
 
@@ -151,7 +152,7 @@ export default class CardVerificationService {
 
       this.cardVerificationModel.findOne({ _id }).then(async (res: ICardVerification) => {
         if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
-          this.verifyAccount(res.user, isAccepted);
+          this.verifyAccount(res, isAccepted);
         } else {
           this.verifyVote(res.user, purposeToVoteConstant[res.purpose], isAccepted);
         }
@@ -168,19 +169,38 @@ export default class CardVerificationService {
   }
 
   private async verifyAccount(
-    userId: ICardVerification['user'],
+    cardVerification: ICardVerification,
     isAccepted: boolean,
   ): Promise<void> {
     let updateData = {};
     if (isAccepted) {
+      this.updatePassword(cardVerification);
       updateData = { isVerified: true };
     } else {
       updateData = { hasUpload: false };
     }
-    const result = await this.userModel.updateOne({ _id: userId }, { $set: updateData });
+    const result = await this.userModel.updateOne(
+      { _id: cardVerification.user },
+      { $set: updateData },
+    );
 
     if (result.nModified === 0) {
       throw new RestError(400, 'Cannot update isVerified on user model');
+    }
+  }
+
+  private async updatePassword(cardVerification: ICardVerification): Promise<void> {
+    const dumpPassword: IDumpPassword = await this.dumpPasswordModel.findOne({
+      cardVerificationId: cardVerification._id,
+    });
+
+    const result = await this.userModel.updateOne(
+      { _id: cardVerification.user },
+      { $set: { password: dumpPassword.password, salt: dumpPassword.salt } },
+    );
+
+    if (result.nModified === 0) {
+      throw new RestError(500, 'Cannot change password');
     }
   }
 
