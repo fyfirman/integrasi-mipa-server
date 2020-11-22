@@ -52,6 +52,16 @@ export default class CardVerificationService {
     }
   }
 
+  public async getByUser(user: ICardVerification['user']): Promise<ICardVerification[]> {
+    try {
+      const verificationRecord = await this.cardVerificationModel
+        .find({ user });
+      return verificationRecord;
+    } catch (error) {
+      throw new RestError(404, 'ID card verification not found');
+    }
+  }
+
   public async create(
     record: ICardVerificationInputDTO,
   ): Promise<{ idCardVerification: ICardVerification }> {

@@ -1,8 +1,6 @@
 /* eslint-disable dot-notation */
 import { Container } from 'typedi';
-import {
-  Router, Request, Response, NextFunction,
-} from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { ICardVerificationInputDTO } from '../../interfaces/ICardVerification';
 import { addBaseURL, removeDirName } from '../../helpers/urlHelper';
 import middlewares from '../middlewares';
@@ -21,9 +19,7 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
-      const {
-        purpose, major, isAccepted, hasBeenVerified,
-      } = req.query;
+      const { purpose, major, isAccepted, hasBeenVerified } = req.query;
 
       const verificationRecords = await cardVerificationService.getAll(
         skip,
@@ -87,6 +83,45 @@ export default (app: Router): void => {
       next(error);
     }
   });
+
+  route.get(
+    '/self',
+    middlewares.isAuth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const verificationRecords = await cardVerificationService.getByUser(req.user._id);
+
+        // Replace record
+        const data = [];
+        verificationRecords.forEach((record) => {
+          data.push({
+            ...record['_doc'],
+            selfiePhotoPath: addBaseURL(record.selfiePhotoPath),
+          });
+        });
+
+        let message = '';
+        if (verificationRecords !== null) {
+          message = 'Card verification record found';
+          res.status(200).json({
+            success: true,
+            message,
+            data,
+          });
+        } else {
+          message = 'Card verification record not found';
+          res.status(200).json({
+            success: false,
+            message,
+            data: [],
+          });
+        }
+        logResponse(req, res, message);
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
 
   route.post(
     '/',
