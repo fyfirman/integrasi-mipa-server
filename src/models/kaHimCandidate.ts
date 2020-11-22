@@ -6,15 +6,12 @@ const candidateProfile = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
     },
     npm: {
       type: String,
-      required: true,
     },
     batchYear: {
       type: Number,
-      required: true,
     },
   },
   { _id: false },
