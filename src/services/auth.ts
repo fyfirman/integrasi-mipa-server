@@ -7,6 +7,7 @@ import { RestError } from '../helpers/error';
 import { IUser, IUserInputDTO, changePasswordUserDTO } from '../interfaces/IUser';
 import config from '../config';
 import { majorConstant } from '../constant';
+import { getBatchYearByNPM } from '../helpers/getBatchYear';
 
 @Service()
 export default class AuthService {
@@ -25,6 +26,7 @@ export default class AuthService {
       const userRecord = await this.userModel.create({
         ...userInputDTO,
         major: this.getMajorByNPM(userInputDTO.npm),
+        batchYear: getBatchYearByNPM(userInputDTO.npm),
         salt: salt.toString('hex'),
         password: hashedPassword,
       });
@@ -129,7 +131,6 @@ export default class AuthService {
   private getMajorByNPM(npm: IUser['npm']): string {
     const initialNPM = npm.substring(2, 4);
 
-    this.logger.debug(initialNPM);
     switch (initialNPM) {
       case '01':
         return majorConstant.MAT;

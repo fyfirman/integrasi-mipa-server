@@ -12,6 +12,7 @@ import config from '../config';
 import majorNPM from '../constant/majorNPM';
 import roleConstant from '../constant/roleConstant';
 import { majorConstant } from '../constant';
+import { getBatchYearByNPM } from '../helpers/getBatchYear';
 
 const formatData = (row): IUserInputDTO => ({
   npm: row.NPM,
@@ -54,6 +55,7 @@ const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUse
   if (isAdmin) console.log(user.password);
 
   const major = majorNPM[user.npm.substring(2, 4)];
+  const batchYear = getBatchYearByNPM(user.npm);
   const role = getRole(major);
   const { salt, password } = await generatePassword(isAdmin ? user.password : user.npm);
 
@@ -61,6 +63,7 @@ const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUse
     ...user,
     major,
     role,
+    batchYear,
     salt,
     password,
     isPasswordChanged: isAdmin,

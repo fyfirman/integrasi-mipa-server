@@ -25,6 +25,7 @@ const User = new mongoose.Schema(
       type: String,
       enum: Object.keys(majorConstant),
     },
+    batchYear: String,
     himaPermission: {
       type: Boolean,
       required: true,

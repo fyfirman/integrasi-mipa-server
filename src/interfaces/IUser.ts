@@ -4,6 +4,7 @@ export interface IUser {
   password: string;
   name: string;
   major: string;
+  batchYear: string;
   role: string;
   isPasswordChanged: boolean;
   isVerified: boolean;
@@ -24,6 +25,7 @@ export interface IUserSeederDTO {
   password: string;
   name: string;
   major: string;
+  batchYear: string;
   role: string;
   himaPermission: boolean;
   mipaPermission: boolean;
