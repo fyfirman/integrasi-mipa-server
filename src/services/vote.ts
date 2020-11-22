@@ -89,8 +89,6 @@ export default class VoteService {
       $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
     };
 
-    console.log({ ...(batchYear && { batchYear }) });
-
     try {
       return await this.voteModel
         .aggregate([
