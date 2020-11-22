@@ -1,14 +1,17 @@
 import { Service, Inject } from 'typedi';
+import { IVote } from '../interfaces/IVote';
 import { ICardVerificationInputDTO, ICardVerification } from '../interfaces/ICardVerification';
 
 import { RestError } from '../helpers/error';
-import { purposeVerifConstant } from '../constant';
+import { purposeVerifConstant, purposeToVoteConstant } from '../constant';
 
 @Service()
 export default class CardVerificationService {
   @Inject('cardVerificationModel') private cardVerificationModel;
 
   @Inject('userModel') private userModel;
+
+  @Inject('voteModel') private voteModel;
 
   public async getAll(
     skip = 0,
@@ -28,7 +31,11 @@ export default class CardVerificationService {
         Object.assign(options, { hasBeenVerified });
       }
 
-      return this.cardVerificationModel.find(options).populate('user', 'npm name').skip(skip).limit(limit);
+      return this.cardVerificationModel
+        .find(options)
+        .populate('user', 'npm name')
+        .skip(skip)
+        .limit(limit);
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');
     }
@@ -76,17 +83,11 @@ export default class CardVerificationService {
         { $set: { isAccepted, hasBeenVerified: true, verifiedAt: Date.now() } },
       );
 
-      this.cardVerificationModel.findOne({ _id, purpose: 'ACTIVATE_ACCOUNT' }).then(async (res) => {
-        let updateData = {};
-        if (isAccepted) {
-          updateData = { isVerified: true };
+      this.cardVerificationModel.findOne({ _id }).then(async (res: ICardVerification) => {
+        if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
+          this.verifyAccount(res.user, isAccepted);
         } else {
-          updateData = { hasUpload: false };
-        }
-        const updateUser = await this.userModel.updateOne({ _id: res.user }, { $set: updateData });
-
-        if (updateUser.nModified === 0) {
-          throw new RestError(400, 'Cannot update isVerified on user model');
+          this.verifyVote(res.user, purposeToVoteConstant[res.purpose], isAccepted);
         }
       });
 
@@ -97,6 +98,38 @@ export default class CardVerificationService {
       return results;
     } catch (error) {
       throw new RestError(400, error.message);
+    }
+  }
+
+  private async verifyAccount(
+    userId: ICardVerification['user'],
+    isAccepted: boolean,
+  ): Promise<void> {
+    let updateData = {};
+    if (isAccepted) {
+      updateData = { isVerified: true };
+    } else {
+      updateData = { hasUpload: false };
+    }
+    const result = await this.userModel.updateOne({ _id: userId }, { $set: updateData });
+
+    if (result.nModified === 0) {
+      throw new RestError(400, 'Cannot update isVerified on user model');
+    }
+  }
+
+  private async verifyVote(
+    userId: ICardVerification['user'],
+    voteType: IVote['type'],
+    isAccepted: boolean,
+  ): Promise<void> {
+    const result = await this.voteModel.updateOne(
+      { userId, type: voteType },
+      { $set: { isVerified: isAccepted } },
+    );
+
+    if (result.nModified === 0) {
+      throw new RestError(400, 'Cannot update vote record');
     }
   }
 
