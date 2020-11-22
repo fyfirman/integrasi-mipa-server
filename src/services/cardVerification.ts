@@ -72,38 +72,45 @@ export default class CardVerificationService {
     newPassword: IDumpPasswordDTO['password'],
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
-      return this.cardVerificationModel.create(record).then(async (res) => {
-        if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
-          const userRecord = await this.userModel.findOne({ _id: record.user });
-          if (!userRecord) {
-            throw new RestError(404, 'User not found');
-          }
-          const validPassword = await argon2.verify(userRecord.password, oldPassword);
-
-          if (validPassword) {
+      if (record.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
+        if (this.checkPassword(record.user, oldPassword)) {
+          return this.cardVerificationModel.create(record).then(async (res: ICardVerification) => {
             this.dumpPassword(res._id, newPassword);
-            const result = await this.userModel.updateOne(
-              { _id: res.user },
-              { $set: { hasUpload: true } },
-            );
-
-            if (result.nModified === 0) {
-              const user = await this.userModel.findOne({ _id: res.user });
-              if (user.hasUpload) {
-                throw new RestError(
-                  400,
-                  'User has uploaded an verification. Please accept/decline an verification',
-                );
-              }
-              throw new RestError(500, 'Cannot update hasUpload on user model');
-            }
-          }
-          throw new RestError(400, 'Invalid old password');
+            this.updateHasUpload(record.user);
+          });
         }
-      });
+      }
+      return this.cardVerificationModel.create(record);
     } catch (error) {
       throw new RestError(400, error.message);
     }
+  }
+
+  private async updateHasUpload(userId: string): Promise<void> {
+    const result = await this.userModel.updateOne({ _id: userId }, { $set: { hasUpload: true } });
+
+    if (result.nModified === 0) {
+      const user = await this.userModel.findOne({ _id: userId });
+      if (user.hasUpload) {
+        throw new RestError(
+          400,
+          'User has uploaded an verification. Please accept/decline an verification',
+        );
+      }
+      throw new RestError(500, 'Cannot update hasUpload on user model');
+    }
+  }
+
+  private async checkPassword(userId: string, password: string): Promise<boolean> {
+    const userRecord = await this.userModel.findOne({ _id: userId });
+    if (!userRecord) {
+      throw new RestError(404, 'User not found');
+    }
+    const validPassword = await argon2.verify(userRecord.password, password);
+
+    if (!validPassword) throw new RestError(400, 'Invalid old password');
+
+    return true;
   }
 
   private async dumpPassword(cardVerificationId: string, password): Promise<void> {
