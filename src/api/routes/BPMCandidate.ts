@@ -27,8 +27,9 @@ export default (app: Router): void => {
     try {
       const skip = parseInt(req.query.skip, 10);
       const limit = parseInt(req.query.limit, 10);
+      const { major } = req.query;
 
-      const kaBEMCandidates = await BPMService.getAll(skip, limit);
+      const kaBEMCandidates = await BPMService.getAll(skip, limit, major);
 
       const data = [];
       kaBEMCandidates.forEach((record) => {

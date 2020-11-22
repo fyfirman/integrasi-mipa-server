@@ -9,9 +9,15 @@ export default class BPMCandidateService {
 
   @Inject('voteModel') private voteModel;
 
-  public async getAll(skip = 0, limit = 0): Promise<IBPMCandidate[]> {
+  public async getAll(
+    skip = 0,
+    limit = 0,
+    major: IBPMCandidate['major'],
+  ): Promise<IBPMCandidate[]> {
     try {
-      return await this.BPMCandidateModel.find({}).skip(skip).limit(limit);
+      return await this.BPMCandidateModel.find({ ...(major && { major }) })
+        .skip(skip)
+        .limit(limit);
     } catch (error) {
       throw new RestError(404, `An error occured ${error.message}`);
     }
