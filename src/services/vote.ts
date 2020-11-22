@@ -204,6 +204,16 @@ export default class VoteService {
     }
   }
 
+  public async countListStatus(major: IUser['major']): Promise<number> {
+    try {
+      return this.userModel.count({
+        ...(major !== majorConstant.MIPA && { major }),
+      });
+    } catch (error) {
+      throw new RestError(error.statusCode ? error.statusCode : 500, error.message);
+    }
+  }
+
   public async getStatus(userId: ICardVerification['user']): Promise<any> {
     try {
       const hasVotedBEM = await this.hasVoted(userId, voteTypeConstant.BEM);
