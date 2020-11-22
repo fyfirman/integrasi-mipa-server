@@ -197,6 +197,7 @@ export default class VoteService {
             },
           },
         ])
+        .sort('npm')
         .skip(skip)
         .limit(limit);
     } catch (error) {
