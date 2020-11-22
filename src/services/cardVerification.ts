@@ -3,10 +3,8 @@ import argon2 from 'argon2';
 import { Service, Inject } from 'typedi';
 import { randomBytes } from 'crypto';
 import { IDumpPassword, IDumpPasswordDTO } from '../interfaces/IDumpPassword';
-
 import { IVote } from '../interfaces/IVote';
 import { ICardVerificationInputDTO, ICardVerification } from '../interfaces/ICardVerification';
-
 import { RestError } from '../helpers/error';
 import { purposeVerifConstant, purposeToVoteConstant } from '../constant';
 
@@ -73,11 +71,15 @@ export default class CardVerificationService {
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
       if (record.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
-        if (this.checkPassword(record.user, oldPassword)) {
-          return this.cardVerificationModel.create(record).then(async (res: ICardVerification) => {
-            this.dumpPassword(res._id, newPassword);
-            this.updateHasUpload(record.user);
-          });
+        if (await this.checkPassword(record.user, oldPassword)) {
+          await this.updateHasUpload(record.user);
+          const result = await this.cardVerificationModel
+            .create(record)
+            .then(async (res: ICardVerification) => {
+              await this.dumpPassword(res._id, newPassword);
+            });
+
+          return result;
         }
       }
       return this.cardVerificationModel.create(record);
