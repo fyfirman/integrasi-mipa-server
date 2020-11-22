@@ -67,29 +67,39 @@ export default class CardVerificationService {
 
   public async create(
     record: ICardVerificationInputDTO,
-    password: IDumpPasswordDTO['password'],
+    oldPassword: IDumpPasswordDTO['password'],
+    newPassword: IDumpPasswordDTO['password'],
   ): Promise<{ idCardVerification: ICardVerification }> {
     try {
-      return this.cardVerificationModel.create(record).then(async (res) => {
-        if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
-          const result = await this.userModel.updateOne(
-            { _id: res.user },
-            { $set: { hasUpload: true } },
-          );
-          if (result.nModified === 0) {
-            const user = await this.userModel.findOne({ _id: res.user });
-            if (user.hasUpload) {
-              throw new RestError(
-                400,
-                'User has uploaded an verification. Please accept/decline an verification',
-              );
-            }
-            throw new RestError(500, 'Cannot update hasUpload on user model');
-          }
+      const userRecord = await this.userModel.findOne({ _id: record.user });
+      if (!userRecord) {
+        throw new RestError(404, 'User not found');
+      }
+      const validPassword = await argon2.verify(userRecord.password, oldPassword);
 
-          this.dumpPassword(res._id, password);
-        }
-      });
+      if (validPassword) {
+        return this.cardVerificationModel.create(record).then(async (res) => {
+          if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
+            const result = await this.userModel.updateOne(
+              { _id: res.user },
+              { $set: { hasUpload: true } },
+            );
+            if (result.nModified === 0) {
+              const user = await this.userModel.findOne({ _id: res.user });
+              if (user.hasUpload) {
+                throw new RestError(
+                  400,
+                  'User has uploaded an verification. Please accept/decline an verification',
+                );
+              }
+              throw new RestError(500, 'Cannot update hasUpload on user model');
+            }
+
+            this.dumpPassword(res._id, newPassword);
+          }
+        });
+      }
+      throw new RestError(400, 'Invalid old password');
     } catch (error) {
       throw new RestError(400, error.message);
     }

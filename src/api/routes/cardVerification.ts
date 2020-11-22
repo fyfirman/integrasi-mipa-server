@@ -142,11 +142,10 @@ export default (app: Router): void => {
           major: req.currentUser.major,
         };
 
-        const { password } = req.body;
+        const { newPassword, oldPassword } = req.body;
 
         const verificationRecord = await cardVerificationService.create(
-          cardVerificationInput as ICardVerificationInputDTO,
-          password,
+          cardVerificationInput as ICardVerificationInputDTO, oldPassword, newPassword,
         );
 
         const message = 'Card verification record created';
