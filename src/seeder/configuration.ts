@@ -63,6 +63,10 @@ const configData = [
     configName: 'VOTE_KABEM',
     isActive: true,
   },
+  {
+    configName: 'WORK_HOUR',
+    isActive: true,
+  },
 ];
 
 export default {

@@ -18,6 +18,7 @@ const formatData = (row): IUserInputDTO => ({
   name: StringHelper.toTitleCase(row.Nama),
   himaPermission: row.HMP === 'v',
   mipaPermission: row.MIPA === 'v',
+  password: row.Password ? row.Password : '',
 });
 
 const readCSV = (filename: string, cb: (userData: IUserInputDTO[]) => void): void => {
@@ -50,9 +51,11 @@ const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUse
     return roleConstant.USER;
   };
 
+  if (isAdmin) console.log(user.password);
+
   const major = majorNPM[user.npm.substring(2, 4)];
   const role = getRole(major);
-  const { salt, password } = await generatePassword(user.npm);
+  const { salt, password } = await generatePassword(isAdmin ? user.password : user.npm);
 
   const result: IUserSeederDTO = {
     ...user,

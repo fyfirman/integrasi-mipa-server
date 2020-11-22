@@ -16,6 +16,7 @@ export interface IUserInputDTO {
   name: string;
   himaPermission: boolean;
   mipaPermission: boolean;
+  password?: string;
 }
 
 export interface IUserSeederDTO {
