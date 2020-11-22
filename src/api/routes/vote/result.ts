@@ -20,17 +20,27 @@ export default (voteRouter: Router): void => {
   router.get('/', middlewares.isAuth, async (req: Request, res: Response, next: NextFunction) => {
     try {
       const type = req.params.type.toUpperCase();
-      const { date } = req.query;
+      const { date, major, batchYear } = req.query;
 
       let detail;
       let total;
       if (Object.values(voteTypeConstant).includes(type)) {
         if (date !== undefined) {
-          total = await voteService.getTotalResultByType(type, moment(date, 'YYYY-MM-DD').toDate());
-          detail = await voteService.getResultByType(type, moment(date, 'YYYY-MM-DD').toDate());
+          total = await voteService.getTotalResultByType(
+            type,
+            major,
+            batchYear,
+            moment(date, 'YYYY-MM-DD').toDate(),
+          );
+          detail = await voteService.getResultByType(
+            type,
+            major,
+            batchYear,
+            moment(date, 'YYYY-MM-DD').toDate(),
+          );
         } else {
-          total = await voteService.getTotalResultByType(type);
-          detail = await voteService.getResultByType(type);
+          total = await voteService.getTotalResultByType(type, major, batchYear);
+          detail = await voteService.getResultByType(type, major, batchYear);
         }
       } else {
         throw new RestError(404, 'Not found');

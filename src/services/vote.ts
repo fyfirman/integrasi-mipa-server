@@ -39,7 +39,12 @@ export default class VoteService {
     }
   }
 
-  public async getTotalResultByType(type: IVote['type'], date?: Date): Promise<IVoteTotalResult[]> {
+  public async getTotalResultByType(
+    type: IVote['type'],
+    major?: IVote['major'],
+    batchYear?: IVote['batchYear'],
+    date?: Date,
+  ): Promise<IVoteTotalResult[]> {
     const createdAt = {
       $gte: moment(date).toDate(),
       $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
@@ -49,6 +54,8 @@ export default class VoteService {
         {
           $match: {
             type,
+            ...(major && { major }),
+            ...(batchYear && { batchYear }),
             ...(date && { createdAt }),
           },
         },
@@ -70,12 +77,19 @@ export default class VoteService {
     }
   }
 
-  public async getResultByType(type: IVote['type'], date?: Date): Promise<IVoteTotalResult[]> {
+  public async getResultByType(
+    type: IVote['type'],
+    major?: IVote['major'],
+    batchYear?: IVote['batchYear'],
+    date?: Date,
+  ): Promise<IVoteTotalResult[]> {
     const candidateCollection = candidateCollectionMap[type];
     const createdAt = {
       $gte: moment(date).toDate(),
       $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
     };
+
+    console.log({ ...(batchYear && { batchYear }) });
 
     try {
       return await this.voteModel
@@ -83,6 +97,8 @@ export default class VoteService {
           {
             $match: {
               type,
+              ...(major && { major }),
+              ...(batchYear && { batchYear }),
               ...(date && { createdAt }),
             },
           },
