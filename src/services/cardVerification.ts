@@ -159,11 +159,11 @@ export default class CardVerificationService {
         { $set: { isAccepted, hasBeenVerified: true, verifiedAt: Date.now() } },
       );
 
-      this.cardVerificationModel.findOne({ _id }).then(async (res: ICardVerification) => {
+      await this.cardVerificationModel.findOne({ _id }).then(async (res: ICardVerification) => {
         if (res.purpose === purposeVerifConstant.ACTIVATE_ACCOUNT) {
-          this.verifyAccount(res, isAccepted);
+          await this.verifyAccount(res, isAccepted);
         } else {
-          this.verifyVote(res.user, purposeToVoteConstant[res.purpose], isAccepted);
+          await this.verifyVote(res.user, purposeToVoteConstant[res.purpose], isAccepted);
         }
       });
 
@@ -183,7 +183,7 @@ export default class CardVerificationService {
   ): Promise<void> {
     let updateData = {};
     if (isAccepted) {
-      this.updatePassword(cardVerification);
+      await this.updatePassword(cardVerification);
       updateData = { isVerified: true };
     } else {
       updateData = { hasUpload: false };
