@@ -27,9 +27,7 @@ export default class CardVerificationService {
       if (purpose) Object.assign(options, { purpose });
       if (isAccepted) Object.assign(options, { isAccepted });
       if (hasBeenVerified) Object.assign(options, { hasBeenVerified });
-      if (purpose === purposeVerifConstant.VERIFY_HIMA_VOTE && major) {
-        Object.assign(options, { hasBeenVerified });
-      }
+      if (major) Object.assign(options, { major });
 
       return this.cardVerificationModel
         .find(options)
@@ -54,8 +52,7 @@ export default class CardVerificationService {
 
   public async getByUser(user: ICardVerification['user']): Promise<ICardVerification[]> {
     try {
-      const verificationRecord = await this.cardVerificationModel
-        .find({ user });
+      const verificationRecord = await this.cardVerificationModel.find({ user });
       return verificationRecord;
     } catch (error) {
       throw new RestError(404, 'ID card verification not found');

@@ -139,7 +139,7 @@ export default (app: Router): void => {
           user: req.user._id,
           selfiePhotoPath: removeDirName(req.photoPath),
           purpose: req.body.purpose,
-          major: req.body.major,
+          major: req.currentUser.major,
         };
 
         const verificationRecord = await cardVerificationService.create(
