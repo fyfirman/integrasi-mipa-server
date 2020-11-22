@@ -6,6 +6,7 @@ import {
   kaHimCandidateModel,
   voteModel,
   configurationModel,
+  dumpPasswordModel,
 } from '../models';
 
 const models = [
@@ -36,6 +37,10 @@ const models = [
   {
     name: 'configurationModel',
     model: configurationModel,
+  },
+  {
+    name: 'dumpPasswordModel',
+    model: dumpPasswordModel,
   },
 ];
 
