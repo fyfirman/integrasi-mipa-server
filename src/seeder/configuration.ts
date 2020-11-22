@@ -28,6 +28,10 @@ const configData = [
     isActive: true,
   },
   {
+    configName: 'VOTE_BPM_TEKIM',
+    isActive: true,
+  },
+  {
     configName: 'VOTE_KAHIM_TI',
     isActive: true,
   },

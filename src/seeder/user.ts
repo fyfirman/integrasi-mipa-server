@@ -52,9 +52,7 @@ const fillAttribute = async (user: IUserInputDTO, isAdmin = false): Promise<IUse
     return roleConstant.USER;
   };
 
-  if (isAdmin) console.log(user.password);
-
-  const major = majorNPM[user.npm.substring(2, 4)];
+  const major = majorNPM[user.npm.substring(2, 6)];
   const batchYear = getBatchYearByNPM(user.npm);
   const role = getRole(major);
   const { salt, password } = await generatePassword(isAdmin ? user.password : user.npm);
@@ -104,6 +102,7 @@ const seed = (): void => {
       readCSV('himbio.csv', callback);
       readCSV('hmte.csv', callback);
       readCSV('pedra.csv', callback);
+      readCSV('tekim.csv', callback);
       readCSV('test.csv', callback);
       readCSV('admin.csv', (data) => callback(data, true));
     });

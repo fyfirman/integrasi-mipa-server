@@ -9,4 +9,5 @@ export default {
   GEO: 'GEO',
   STAT: 'STAT',
   MIPA: 'MIPA',
+  TEKIM: 'TEKIM',
 };
