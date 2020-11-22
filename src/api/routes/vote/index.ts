@@ -63,6 +63,7 @@ export default (app: Router): void => {
       }
     },
   );
+
   route.post(
     '/',
     middlewares.isAuth,
@@ -70,9 +71,14 @@ export default (app: Router): void => {
     middlewares.isUser,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const inputVoteDTO = { userId: req.user._id, ...req.body };
+        const inputVoteDTO: IVoteDTO = {
+          userId: req.user._id,
+          major: req.currentUser.major,
+          batchYear: req.currentUser.batchYear,
+          ...req.body,
+        };
 
-        const voteRecord: IVote = await voteService.create(inputVoteDTO as IVoteDTO);
+        const voteRecord: IVote = await voteService.create(inputVoteDTO);
 
         const message = 'Vote record is created';
         res.status(201).json({

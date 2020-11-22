@@ -7,12 +7,16 @@ export interface IVote {
   _id: string;
   userId: IUser['_id'];
   candidateId: IKaBEMcandidate['_id'] | IKaHimCandidate['_id'] | IBPMCandidate['_id'];
+  major: string;
+  batchYear: string;
   type: string;
   isVerified: boolean;
 }
 
 export interface IVoteDTO {
   userId: IUser['_id'];
+  major: string;
+  batchYear: string;
   candidateId: IKaBEMcandidate['_id'] | IKaHimCandidate['_id'] | IBPMCandidate['_id'];
   type: string;
 }
