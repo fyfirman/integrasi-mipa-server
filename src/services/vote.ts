@@ -205,9 +205,9 @@ export default class VoteService {
 
         return {
           ...value,
-          hasVotedBEM,
-          hasVotedBPM,
-          hasVotedHIMA,
+          ...(type === 'MIPA' && { hasVotedBEM }),
+          ...(type === 'MIPA' && { hasVotedBPM }),
+          ...(type === 'HIMA' && { hasVotedHIMA }),
         };
       });
     } catch (error) {
