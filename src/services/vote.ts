@@ -77,7 +77,7 @@ export default class VoteService {
     }
   }
 
-  public async getResultByType(
+  public async getResultGroupByCandidate(
     type: IVote['type'],
     major?: IVote['major'],
     batchYear?: IVote['batchYear'],
@@ -134,6 +134,45 @@ export default class VoteService {
           },
         ])
         .sort('candidateNumber');
+    } catch (error) {
+      throw new RestError(500, `An error occured ${error.message}`);
+    }
+  }
+
+  public async getResultGroupByHima(
+    type: IVote['type'],
+    batchYear?: IVote['batchYear'],
+    date?: Date,
+  ): Promise<IVoteTotalResult[]> {
+    const createdAt = {
+      $gte: moment(date).toDate(),
+      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
+    };
+
+    try {
+      return await this.voteModel
+        .aggregate([
+          {
+            $match: {
+              type,
+              ...(batchYear && { batchYear }),
+              ...(date && { createdAt }),
+            },
+          },
+          {
+            $group: {
+              _id: '$major',
+              total: { $sum: 1 },
+              totalUnverified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
+              },
+              totalVerified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
+              },
+            },
+          },
+        ])
+        .sort('major');
     } catch (error) {
       throw new RestError(500, `An error occured ${error.message}`);
     }
