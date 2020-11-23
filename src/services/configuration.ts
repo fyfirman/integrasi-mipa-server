@@ -53,7 +53,7 @@ export default class ConfigurationService {
 
   private isInRange(): boolean {
     const timeNow = new Date().toISOString();
-    const hour = parseInt(timeNow.substring(0, 2), 10);
+    const hour = parseInt(timeNow.substring(11, 13), 10);
 
     if (hour > 0 && hour < 13) return true;
     return false;
