@@ -1,8 +1,10 @@
+/* eslint-disable dot-notation */
 import { Container } from 'typedi';
 import {
   Router, Request, Response, NextFunction,
 } from 'express';
 import { celebrate, Joi } from 'celebrate';
+import { RestError } from '../../helpers/error';
 import { IConfigurationDTO } from '../../interfaces/IConfiguration';
 
 import middlewares from '../middlewares';
@@ -52,15 +54,30 @@ export default (app: Router): void => {
 
   route.get('/workhour', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await configurationService.getWorkHour();
+      const workHour = await configurationService.getWorkHour();
 
       const message = 'Configuration found';
-
-      res.status(200).json({
-        success: true,
-        message,
-        data: result,
-      });
+      if (req.query.name) {
+        const result = await configurationService.getByName(req.query.name);
+        if (result === null) {
+          throw new RestError(404, `Cannot find configuration with name ${req.query.name}`);
+        }
+        res.status(200).json({
+          success: true,
+          message,
+          data: {
+            ...workHour,
+            ...result['_doc'],
+            isActive: workHour.isActive && result.isActive,
+          },
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message,
+          data: workHour,
+        });
+      }
 
       logResponse(req, res, message);
     } catch (error) {
