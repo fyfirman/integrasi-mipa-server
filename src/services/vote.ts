@@ -139,9 +139,9 @@ export default class VoteService {
     }
   }
 
-  public async getResultGroupByHima(
+  public async getResultGroupBy(
+    groupBy: string,
     type: IVote['type'],
-    batchYear?: IVote['batchYear'],
     date?: Date,
   ): Promise<IVoteTotalResult[]> {
     const createdAt = {
@@ -155,13 +155,12 @@ export default class VoteService {
           {
             $match: {
               type,
-              ...(batchYear && { batchYear }),
               ...(date && { createdAt }),
             },
           },
           {
             $group: {
-              _id: '$major',
+              _id: `$${groupBy}`,
               total: { $sum: 1 },
               totalUnverified: {
                 $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },

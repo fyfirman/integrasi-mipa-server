@@ -26,12 +26,21 @@ export default (voteRouter: Router): void => {
         throw new RestError(404, 'Not found');
       }
 
+      if (groupBy !== undefined && !['major', 'batchYear'].includes(groupBy)) {
+        throw new RestError(
+          402,
+          `Params groupBy '${groupBy}' is invalid. Please use 'major' or 'batchYear'`,
+        );
+      }
+
       const date = req.query.date ? moment(req.query.date, 'YYYY-MM-DD').toDate() : null;
       const total = await voteService.getTotalResultByType(type, major, batchYear, date);
       let detail = await voteService.getResultGroupByCandidate(type, major, batchYear, date);
 
       if ((type === voteTypeConstant.BEM || type === voteTypeConstant.BPM) && groupBy === 'major') {
-        detail = await voteService.getResultGroupByHima(type, batchYear, date);
+        detail = await voteService.getResultGroupBy(groupBy, type, date);
+      } else if (type === voteTypeConstant.HIMA && groupBy === 'batchYear') {
+        detail = await voteService.getResultGroupBy(groupBy, type, date);
       }
 
       const message = 'Vote fetched successfully';
