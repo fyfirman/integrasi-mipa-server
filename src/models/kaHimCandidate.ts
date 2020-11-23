@@ -27,10 +27,6 @@ const KaHimCandidate = new mongoose.Schema(
       type: String,
       enum: Object.keys(majorConstant),
     },
-    npm: {
-      type: String,
-      required: true,
-    },
     chairman: candidateProfile,
     hasViceChairman: { type: Boolean },
     viceChairman: candidateProfile,
