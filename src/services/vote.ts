@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /* eslint-disable dot-notation */
 import { Service, Inject } from 'typedi';
 import moment from 'moment';
@@ -139,8 +140,81 @@ export default class VoteService {
     }
   }
 
+  // public async getResultGroupByDate(type: IVote['type'], groupBy: string[]): Promise<any> {
+  public async getResult(type: IVote['type'], groupBy: string[]): Promise<any> {
+    try {
+      const grouping = this.parseGroupBy(groupBy);
+
+      return await this.voteModel
+        .aggregate([
+          {
+            $match: { type },
+          },
+          {
+            $group: {
+              _id: grouping,
+              total: { $sum: 1 },
+              totalUnverified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', false] }, 1, 0] },
+              },
+              totalVerified: {
+                $sum: { $cond: [{ $eq: ['$isVerified', true] }, 1, 0] },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: candidateCollectionMap[type],
+              localField: '_id.candidateId',
+              foreignField: '_id',
+              as: 'candidates',
+            },
+          },
+          {
+            $project: {
+              candidateNumber: {
+                $cond: [
+                  { $ne: [{ $size: '$candidates' }, 0] },
+                  { $arrayElemAt: ['$candidates.number', 0] },
+                  0,
+                ],
+              },
+              candidateName: {
+                $cond: [
+                  { $ne: [{ $size: '$candidates' }, 0] },
+                  { $arrayElemAt: ['$candidates.chairman.name', 0] },
+                  'Kotak Kosong',
+                ],
+              },
+              totalUnverified: 1,
+              totalVerified: 1,
+              total: 1,
+            },
+          },
+        ])
+        .sort('_id.date');
+    } catch (error) {
+      throw new RestError(500, error.message);
+    }
+  }
+
+  private parseGroupBy(array: string[]): any {
+    const groupByObject = {};
+    array.forEach((value) => {
+      if (value === 'date') {
+        Object.assign(groupByObject, {
+          date: { $dateToString: { format: '%Y-%m-%d', date: '$updatedAt', timezone: '+07' } },
+        });
+      } else {
+        Object.assign(groupByObject, { [value]: `$${value}` });
+      }
+    });
+    return groupByObject;
+  }
+
   public async getResultGroupBy(
     groupBy: string,
+    major: IVote['major'],
     type: IVote['type'],
     date?: Date,
   ): Promise<IVoteTotalResult[]> {
@@ -155,6 +229,7 @@ export default class VoteService {
           {
             $match: {
               type,
+              ...(major && { major }),
               ...(date && { createdAt }),
             },
           },
