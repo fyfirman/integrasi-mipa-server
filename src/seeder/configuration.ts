@@ -28,6 +28,10 @@ const configData = [
     isActive: true,
   },
   {
+    configName: 'VOTE_BPM_GEO',
+    isActive: true,
+  },
+  {
     configName: 'VOTE_BPM_TEKIM',
     isActive: true,
   },
@@ -61,6 +65,10 @@ const configData = [
   },
   {
     configName: 'VOTE_KAHIM_STAT',
+    isActive: true,
+  },
+  {
+    configName: 'VOTE_KAHIM_GEO',
     isActive: true,
   },
   {
