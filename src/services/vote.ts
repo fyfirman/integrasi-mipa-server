@@ -144,6 +144,7 @@ export default class VoteService {
   public async getResult(type: IVote['type'], groupBy: string[]): Promise<any> {
     try {
       const grouping = this.parseGroupBy(groupBy);
+      const isGroupByCandidate = groupBy.includes('candidateId');
 
       return await this.voteModel
         .aggregate([
@@ -172,20 +173,22 @@ export default class VoteService {
           },
           {
             $project: {
-              candidateNumber: {
-                $cond: [
-                  { $ne: [{ $size: '$candidates' }, 0] },
-                  { $arrayElemAt: ['$candidates.number', 0] },
-                  0,
-                ],
-              },
-              candidateName: {
-                $cond: [
-                  { $ne: [{ $size: '$candidates' }, 0] },
-                  { $arrayElemAt: ['$candidates.chairman.name', 0] },
-                  'Kotak Kosong',
-                ],
-              },
+              ...(isGroupByCandidate && {
+                candidateNumber: {
+                  $cond: [
+                    { $ne: [{ $size: '$candidates' }, 0] },
+                    { $arrayElemAt: ['$candidates.number', 0] },
+                    0,
+                  ],
+                },
+                candidateName: {
+                  $cond: [
+                    { $ne: [{ $size: '$candidates' }, 0] },
+                    { $arrayElemAt: ['$candidates.chairman.name', 0] },
+                    'Kotak Kosong',
+                  ],
+                },
+              }),
               totalUnverified: 1,
               totalVerified: 1,
               total: 1,
