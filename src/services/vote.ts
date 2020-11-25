@@ -47,8 +47,8 @@ export default class VoteService {
     date?: Date,
   ): Promise<IVoteTotalResult[]> {
     const createdAt = {
-      $gte: moment(date).add(7, 'hours').toDate(),
-      $lt: moment(date).add(7, 'hours').add(1, 'days').subtract(1, 'minute')
+      $gte: moment(date).subtract(7, 'hours').toDate(),
+      $lt: moment(date).subtract(7, 'hours').add(1, 'days').subtract(1, 'minute')
         .toDate(),
     };
     try {
