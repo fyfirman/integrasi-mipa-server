@@ -114,13 +114,18 @@ export default (voteRouter: Router): void => {
             groupBy = ['date', 'candidateId'];
             throw new RestError(404, 'Not available right now');
           case downloadTypeConstant.HIMA:
-            if (type === voteTypeConstant.HIMA) {
-              throw new RestError(404, 'Workbook grouping by himpunan only available in BEM or BPM');
+            if (voteType === voteTypeConstant.HIMA) {
+              throw new RestError(
+                404,
+                'Workbook grouping by himpunan only available in BEM or BPM',
+              );
             }
             groupBy = ['date', 'major'];
-            throw new RestError(404, 'Not available right now');
+            data = await voteService.getResult(voteType, major, groupBy);
+            workbook = excelService.getHimaWorkbook(data);
+            break;
           case downloadTypeConstant.BATCHYEAR:
-            if (type !== voteTypeConstant.HIMA) {
+            if (voteType !== voteTypeConstant.HIMA) {
               throw new RestError(404, 'Workbook grouping by batch year only available in HIMA');
             }
             if (major === undefined) {
