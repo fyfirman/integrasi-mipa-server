@@ -109,14 +109,23 @@ export default (voteRouter: Router): void => {
         let groupBy;
         let data;
         let workbook;
-        switch (type.toUpperCase()) {
+        switch (type) {
           case downloadTypeConstant.CANDIDATE:
             groupBy = ['date', 'candidateId'];
             throw new RestError(404, 'Not available right now');
           case downloadTypeConstant.HIMA:
+            if (type === voteTypeConstant.HIMA) {
+              throw new RestError(404, 'Workbook grouping by himpunan only available in BEM or BPM');
+            }
             groupBy = ['date', 'major'];
             throw new RestError(404, 'Not available right now');
           case downloadTypeConstant.BATCHYEAR:
+            if (type !== voteTypeConstant.HIMA) {
+              throw new RestError(404, 'Workbook grouping by batch year only available in HIMA');
+            }
+            if (major === undefined) {
+              throw new RestError(402, 'Major params is required');
+            }
             groupBy = ['date', 'batchYear'];
             data = await voteService.getResult(voteType, major, groupBy);
             workbook = excelService.getBatchYearWorkbook(data);
@@ -139,6 +148,7 @@ export default (voteRouter: Router): void => {
         res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
 
         return workbook.xlsx.write(res).then(() => {
+          logResponse(req, res, 'Workbook downloaded');
           res.status(200).end();
         });
       } catch (error) {
