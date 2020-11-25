@@ -284,7 +284,13 @@ export default class VoteService {
     try {
       const result = await this.userModel
         .aggregate([
-          { $match: { ...(major !== majorConstant.MIPA && { major }) } },
+          {
+            $match: {
+              ...(major !== majorConstant.MIPA && { major }),
+              ...(type === 'MIPA' && { mipaPermission: true }),
+              ...(type === 'HIMA' && { himaPermission: true }),
+            },
+          },
           {
             $lookup: {
               from: 'votes',
@@ -345,10 +351,12 @@ export default class VoteService {
     }
   }
 
-  public async countListStatus(major: IUser['major']): Promise<number> {
+  public async countListStatus(type: IVote['type'], major: IUser['major']): Promise<number> {
     try {
-      return this.userModel.count({
+      return this.userModel.countDocuments({
         ...(major !== majorConstant.MIPA && { major }),
+        ...(type === 'MIPA' && { mipaPermission: true }),
+        ...(type === 'HIMA' && { himaPermission: true }),
       });
     } catch (error) {
       throw new RestError(error.statusCode ? error.statusCode : 500, error.message);

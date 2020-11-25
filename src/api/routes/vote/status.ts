@@ -30,7 +30,7 @@ export default (voteRouter: Router): void => {
         const { type } = req.params;
 
         const result = await voteService.getListStatus(type.toUpperCase(), major, skip, limit);
-        const total = await voteService.countListStatus(major);
+        const total = await voteService.countListStatus(type.toUpperCase(), major);
 
         const message = 'Vote status fetched successfully';
         res.status(200).json({
