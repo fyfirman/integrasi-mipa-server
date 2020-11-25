@@ -4,11 +4,12 @@ import {
 } from 'express';
 import moment from 'moment';
 import { RestError } from '../../../helpers/error';
-import { IVote, IVoteDTO } from '../../../interfaces/IVote';
 import middlewares from '../../middlewares';
 import logResponse from '../../../helpers/logResponse';
 import VoteService from '../../../services/vote';
 import voteTypeConstant from '../../../constant/voteTypeConstant';
+import ExcelService from '../../../services/excel';
+import downloadTypeConstant from '../../../constant/downloadTypeConstant';
 
 const router = Router({ mergeParams: true });
 
@@ -16,6 +17,8 @@ export default (voteRouter: Router): void => {
   voteRouter.use('/:type/result', router);
 
   const voteService: VoteService = Container.get(VoteService);
+
+  const excelService: ExcelService = Container.get(ExcelService);
 
   router.get(
     '/',
@@ -81,13 +84,64 @@ export default (voteRouter: Router): void => {
         const { type } = req.params;
         const groupBy: string[] = req.query.groupBy ? req.query.groupBy.split(',') : [];
 
-        const data = await voteService.getResult(type.toUpperCase(), groupBy);
+        const data = await voteService.getResult(type.toUpperCase(), undefined, groupBy);
 
         const message = 'Vote fetched successfully';
         res.status(200).json({
           success: true,
           message,
           data,
+        });
+      } catch (error) {
+        next(error);
+      }
+    },
+  );
+
+  router.get(
+    '/download',
+    middlewares.isAuth,
+    middlewares.attachCurrentUser,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const voteType = req.params.type.toUpperCase();
+        const { major, type } = req.query;
+        let groupBy;
+        let data;
+        let workbook;
+        switch (type.toUpperCase()) {
+          case downloadTypeConstant.PASLON:
+            groupBy = ['date', 'candidateId'];
+            throw new RestError(404, 'Not available right now');
+          case downloadTypeConstant.HIMPUNAN:
+            groupBy = ['date', 'major'];
+            throw new RestError(404, 'Not available right now');
+          case downloadTypeConstant.ANGKATAN:
+            groupBy = ['date', 'batchYear'];
+            data = await voteService.getResult(voteType, major, groupBy);
+            // workbook = excelService.getBatchYearWorkbook(data);
+            throw new RestError(404, 'Not available right now');
+          case downloadTypeConstant.TOTAL:
+          default:
+            groupBy = ['date'];
+            data = await voteService.getResult(voteType, major, groupBy);
+            workbook = excelService.getTotalWorkbook(data);
+            break;
+        }
+
+        const filename = `hasil-pemilu-${voteType}-${type || 'total'}-${moment()
+          .add(7, 'hours')
+          .format('YYYY-MM-DD-hh:mm:ss')}.xlsx`;
+
+        res.setHeader(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        );
+
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+        return workbook.xlsx.write(res).then(() => {
+          res.status(200).end();
         });
       } catch (error) {
         next(error);

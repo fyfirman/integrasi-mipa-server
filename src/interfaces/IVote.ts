@@ -37,3 +37,17 @@ export interface IVoteStatus {
   bpm: boolean;
   hima: boolean;
 }
+
+export interface INewVoteResult {
+  _id: {
+    major?: string;
+    date?: string;
+    candidateId?: string;
+    batchYear?: string;
+  };
+  total: number;
+  totalUnverified: number;
+  totalVerified: number;
+  candidateNumber?: number;
+  candidateName?: string;
+}

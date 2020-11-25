@@ -140,8 +140,11 @@ export default class VoteService {
     }
   }
 
-  // public async getResultGroupByDate(type: IVote['type'], groupBy: string[]): Promise<any> {
-  public async getResult(type: IVote['type'], groupBy: string[]): Promise<any> {
+  public async getResult(
+    type: IVote['type'],
+    major: IVote['major'],
+    groupBy: string[],
+  ): Promise<any> {
     try {
       const grouping = this.parseGroupBy(groupBy);
       const isGroupByCandidate = groupBy.includes('candidateId');
@@ -149,7 +152,7 @@ export default class VoteService {
       return await this.voteModel
         .aggregate([
           {
-            $match: { type },
+            $match: { type, ...(major && { major }) },
           },
           {
             $group: {

@@ -1,0 +1,6 @@
+export default {
+  TOTAL: 'TOTAL',
+  PASLON: 'PASLON',
+  HIMPUNAN: 'HIMPUNAN',
+  ANGKATAN: 'ANGKATAN',
+};
