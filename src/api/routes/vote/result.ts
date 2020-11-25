@@ -129,9 +129,7 @@ export default (voteRouter: Router): void => {
             break;
         }
 
-        const filename = `hasil-pemilu-${voteType}-${type || 'total'}-${moment()
-          .add(7, 'hours')
-          .format('YYYY-MM-DD-hh:mm:ss')}.xlsx`;
+        const filename = `${voteType}-${type || 'total'}-${Date.now()}.xlsx`;
 
         res.setHeader(
           'Content-Type',
