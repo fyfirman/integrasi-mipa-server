@@ -1,6 +1,6 @@
 export default {
-  TOTAL: 'TOTAL',
-  PASLON: 'PASLON',
-  HIMPUNAN: 'HIMPUNAN',
-  ANGKATAN: 'ANGKATAN',
+  TOTAL: 'total',
+  CANDIDATE: 'candidate',
+  BATCHYEAR: 'batchYear',
+  HIMA: 'hima',
 };

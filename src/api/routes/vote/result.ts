@@ -110,13 +110,13 @@ export default (voteRouter: Router): void => {
         let data;
         let workbook;
         switch (type.toUpperCase()) {
-          case downloadTypeConstant.PASLON:
+          case downloadTypeConstant.CANDIDATE:
             groupBy = ['date', 'candidateId'];
             throw new RestError(404, 'Not available right now');
-          case downloadTypeConstant.HIMPUNAN:
+          case downloadTypeConstant.HIMA:
             groupBy = ['date', 'major'];
             throw new RestError(404, 'Not available right now');
-          case downloadTypeConstant.ANGKATAN:
+          case downloadTypeConstant.BATCHYEAR:
             groupBy = ['date', 'batchYear'];
             data = await voteService.getResult(voteType, major, groupBy);
             workbook = excelService.getBatchYearWorkbook(data);
