@@ -87,8 +87,9 @@ export default class VoteService {
   ): Promise<IVoteTotalResult[]> {
     const candidateCollection = candidateCollectionMap[type];
     const createdAt = {
-      $gte: moment(date).toDate(),
-      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
+      $gte: moment(date).subtract(7, 'hours').toDate(),
+      $lt: moment(date).subtract(7, 'hours').add(1, 'days').subtract(1, 'minute')
+        .toDate(),
     };
 
     try {
@@ -226,8 +227,9 @@ export default class VoteService {
     date?: Date,
   ): Promise<IVoteTotalResult[]> {
     const createdAt = {
-      $gte: moment(date).toDate(),
-      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
+      $gte: moment(date).subtract(7, 'hours').toDate(),
+      $lt: moment(date).subtract(7, 'hours').add(1, 'days').subtract(1, 'minute')
+        .toDate(),
     };
 
     try {
