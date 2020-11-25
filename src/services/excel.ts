@@ -1,7 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { Service } from 'typedi';
 import ExcelJS from 'exceljs';
-import { values } from 'lodash';
 import { INewVoteResult } from '../interfaces/IVote';
 
 @Service()
@@ -47,55 +46,85 @@ export default class ExcelService {
     return workbook;
   }
 
-  // public getBatchYearWorkbook(data: INewVoteResult[]): ExcelJS.Workbook {
-  //   const workbook = this.init();
+  public getBatchYearWorkbook(data: INewVoteResult[]): ExcelJS.Workbook {
+    const getExistBatchYear = (): string[] => {
+      const batchYears = [];
+      data.forEach((value) => {
+        if (!batchYears.includes(value._id.batchYear)) {
+          batchYears.push(value._id.batchYear);
+        }
+      });
+      return batchYears;
+    };
 
-  //   const worksheet = workbook.addWorksheet('angkatan');
+    const formatData = (): any => {
+      const result = [];
+      let voteResult = {
+        dayOf: 0,
+        date: '',
+        total: 0,
+      };
 
-  //   const batchYears = [];
-  //   data.forEach((value) => {
-  //     if (!batchYears.includes(value._id.batchYear)) {
-  //       batchYears.push(value._id.batchYear);
-  //     }
-  //   });
+      getExistBatchYear().forEach((batchYear) => {
+        Object.assign(voteResult, { [batchYear]: 0 });
+      });
 
-  //   worksheet.columns = [
-  //     { header: 'Hari ke-', key: 'dayOf', width: 8 },
-  //     { header: 'Tanggal', key: 'date', width: 11 },
-  //     { header: 'Angkatan ', key: 'date', width: 11 },
-  //   ];
+      let i = -1;
+      data.forEach((value, index) => {
+        if (result.length !== 0) {
+          if (value._id.date !== result[i].date) {
+            voteResult = {
+              dayOf: voteResult.dayOf + 1,
+              date: value._id.date,
+              total: value.total,
+            };
+            getExistBatchYear().forEach((batchYear) => {
+              Object.assign(voteResult, { [batchYear]: 0 });
+            });
+            Object.assign(voteResult, { [value._id.batchYear]: value.total });
+            result.push(voteResult);
+            i += 1;
+          } else {
+            Object.assign(voteResult, { [value._id.batchYear]: value.total });
+            voteResult.total += value.total;
+          }
+        } else {
+          i = 0;
+          voteResult = {
+            dayOf: index + 1,
+            date: value._id.date,
+            total: value.total,
+          };
+          getExistBatchYear().forEach((batchYear) => {
+            Object.assign(voteResult, { [batchYear]: 0 });
+          });
+          Object.assign(voteResult, { [value._id.batchYear]: value.total });
+          result.push(voteResult);
+        }
+      });
+      return result;
+    };
 
-  //   batchYears.forEach((value) => {
-  //     worksheet.columns.push({ header: `Angkatan ${value}`, key: value, width: 10 });
-  //   });
-  //   worksheet.columns.push({ header: 'Jumlah Suara Masuk', key: 'total', width: 10 });
+    const setColumn = (): any => {
+      const batchYears = getExistBatchYear();
+      const columns = [
+        { header: 'Hari ke-', key: 'dayOf', width: 8 },
+        { header: 'Tanggal', key: 'date', width: 11 },
+      ];
+      batchYears.forEach((value) => {
+        columns.push({ header: `Angkatan ${value}`, key: value, width: 15 });
+      });
+      columns.push({ header: 'Jumlah Suara Masuk', key: 'total', width: 17 });
 
-  //   const result = [];
-  //   const object = {};
-  //   const voteCount = {};
-  //   data.forEach((value, index) => {
-  //     (object, {
-  //       dayOf: index + 1,
-  //       date: value._id.date,
-  //       result: {},
-  //       total: 0,
-  //     });
-  //     Object.assign(object, { [value._id.batchYear]: value.total });
+      return columns;
+    };
 
-  //     const expectedObject = {
-  //       dayOf: 0,
-  //       date: '20-20-2020',
-  //       result: {
-  //         2017: 62,
-  //         2018: 63,
-  //       },
-  //       total: 125,
-  //     };
-  //     result.push();
-  //   });
+    const workbook = this.init();
+    const worksheet = workbook.addWorksheet('angkatan');
 
-  //   worksheet.addRows(result);
+    worksheet.columns = setColumn();
+    worksheet.addRows(formatData());
 
-  //   return workbook;
-  // }
+    return workbook;
+  }
 }

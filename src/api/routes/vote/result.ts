@@ -119,8 +119,8 @@ export default (voteRouter: Router): void => {
           case downloadTypeConstant.ANGKATAN:
             groupBy = ['date', 'batchYear'];
             data = await voteService.getResult(voteType, major, groupBy);
-            // workbook = excelService.getBatchYearWorkbook(data);
-            throw new RestError(404, 'Not available right now');
+            workbook = excelService.getBatchYearWorkbook(data);
+            break;
           case downloadTypeConstant.TOTAL:
           default:
             groupBy = ['date'];
