@@ -47,8 +47,9 @@ export default class VoteService {
     date?: Date,
   ): Promise<IVoteTotalResult[]> {
     const createdAt = {
-      $gte: moment(date).toDate(),
-      $lt: moment(date).add(1, 'days').subtract(1, 'minute').toDate(),
+      $gte: moment(date).add(7, 'hours').toDate(),
+      $lt: moment(date).add(7, 'hours').add(1, 'days').subtract(1, 'minute')
+        .toDate(),
     };
     try {
       return this.voteModel.aggregate([
