@@ -229,7 +229,6 @@ export default class ExcelService {
         });
       };
 
-      console.log(data);
       const result = [];
       let voteResult = {
         dayOf: 0,
