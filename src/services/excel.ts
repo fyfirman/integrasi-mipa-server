@@ -240,7 +240,7 @@ export default class ExcelService {
       assignZeroToEach(voteResult);
 
       let i = 0;
-      data.forEach((value, index) => {
+      data.forEach((value) => {
         const assignResult = () => {
           if (value.candidateNumber !== 0) {
             Object.assign(voteResult, {
@@ -255,7 +255,7 @@ export default class ExcelService {
         // If date is not exist OR not first value, then create new rows
         if (value._id.date !== (result.length !== 0 ? result[i - 1].date : false)) {
           voteResult = {
-            dayOf: index + 1,
+            dayOf: i + 1,
             date: value._id.date,
             [emptyBox]: 0,
             total: value.total,
