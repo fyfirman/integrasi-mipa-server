@@ -222,39 +222,53 @@ export default class ExcelService {
     };
 
     const formatData = (): any => {
+      const emptyBox = '0 - Kotak Kosong';
+      const assignZeroToEach = (result) => {
+        getExistCandidate().forEach((candidate) => {
+          Object.assign(result, { [candidate]: 0 });
+        });
+      };
+
+      console.log(data);
       const result = [];
       let voteResult = {
         dayOf: 0,
         date: '',
+        [emptyBox]: 0,
         total: 0,
       };
-
-      getExistCandidate().forEach((candidateId) => {
-        Object.assign(voteResult, { [candidateId]: 0 });
-      });
+      assignZeroToEach(voteResult);
 
       let i = 0;
       data.forEach((value, index) => {
-        // If date is not exist, then create new rows
-        if (value._id.date !== (result[i] ? result[i].date : false)) {
+        const assignResult = () => {
+          if (value.candidateNumber !== 0) {
+            Object.assign(voteResult, {
+              [`${value.candidateNumber} - ${value.candidateName}`]: value.totalVerified,
+            });
+            voteResult[emptyBox] += value.totalUnverified;
+          } else {
+            voteResult[emptyBox] += value.total;
+          }
+        };
+
+        // If date is not exist OR not first value, then create new rows
+        if (value._id.date !== (result.length !== 0 ? result[i - 1].date : false)) {
           voteResult = {
             dayOf: index + 1,
             date: value._id.date,
+            [emptyBox]: 0,
             total: value.total,
           };
-          getExistCandidate().forEach((hima) => {
-            Object.assign(voteResult, { [hima]: 0 });
-          });
-          Object.assign(voteResult, {
-            [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
-          });
+          assignZeroToEach(voteResult);
+          assignResult();
           result.push(voteResult);
           i += 1;
         } else {
-          Object.assign(voteResult, {
-            [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
-          });
+          // If date is exist, then fill atribute
+          assignResult();
           voteResult.total += value.total;
+          result[i - 1] = voteResult;
         }
       });
       return result;
