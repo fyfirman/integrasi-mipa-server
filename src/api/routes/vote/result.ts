@@ -102,6 +102,7 @@ export default (voteRouter: Router): void => {
     '/download',
     middlewares.isAuth,
     middlewares.attachCurrentUser,
+    middlewares.isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const voteType = req.params.type.toUpperCase();
@@ -112,7 +113,9 @@ export default (voteRouter: Router): void => {
         switch (type) {
           case downloadTypeConstant.CANDIDATE:
             groupBy = ['date', 'candidateId'];
-            throw new RestError(404, 'Not available right now');
+            data = await voteService.getResult(voteType, major, groupBy);
+            workbook = excelService.getCandidateWorkbook(data);
+            break;
           case downloadTypeConstant.HIMA:
             if (voteType === voteTypeConstant.HIMA) {
               throw new RestError(

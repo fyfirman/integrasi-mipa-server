@@ -209,4 +209,92 @@ export default class ExcelService {
 
     return workbook;
   }
+
+  public getCandidateWorkbook(data: INewVoteResult[]): ExcelJS.Workbook {
+    const getExistCandidate = (): string[] => {
+      const candidates = [];
+      data.forEach((value) => {
+        if (!candidates.includes(`${value.candidateNumber} - ${value.candidateName}`)) {
+          candidates.push(`${value.candidateNumber} - ${value.candidateName}`);
+        }
+      });
+      return candidates;
+    };
+
+    const formatData = (): any => {
+      const result = [];
+      let voteResult = {
+        dayOf: 0,
+        date: '',
+        total: 0,
+      };
+
+      getExistCandidate().forEach((candidateId) => {
+        Object.assign(voteResult, { [candidateId]: 0 });
+      });
+
+      let i = -1;
+      data.forEach((value, index) => {
+        if (result.length !== 0) {
+          if (value._id.date !== result[i].date) {
+            voteResult = {
+              dayOf: voteResult.dayOf + 1,
+              date: value._id.date,
+              total: value.total,
+            };
+            getExistCandidate().forEach((hima) => {
+              Object.assign(voteResult, { [hima]: 0 });
+            });
+            Object.assign(voteResult, {
+              [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
+            });
+            result.push(voteResult);
+            i += 1;
+          } else {
+            Object.assign(voteResult, {
+              [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
+            });
+            voteResult.total += value.total;
+          }
+        } else {
+          i = 0;
+          voteResult = {
+            dayOf: index + 1,
+            date: value._id.date,
+            total: value.total,
+          };
+          getExistCandidate().forEach((hima) => {
+            Object.assign(voteResult, { [hima]: 0 });
+          });
+          Object.assign(voteResult, {
+            [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
+          });
+          result.push(voteResult);
+        }
+      });
+      return result;
+    };
+
+    const setColumn = (): any => {
+      const candidates = getExistCandidate();
+      const columns = [
+        { header: 'Hari ke-', key: 'dayOf', width: 8 },
+        { header: 'Tanggal', key: 'date', width: 11 },
+      ];
+      candidates.forEach((candidate) => {
+        columns.push({ header: candidate, key: candidate, width: 15 });
+      });
+      columns.push({ header: 'Jumlah Suara Masuk', key: 'total', width: 17 });
+
+      return columns;
+    };
+
+    const workbook = this.init();
+    const worksheet = workbook.addWorksheet('calon');
+
+    worksheet.columns = setColumn();
+    worksheet.addRows(formatData());
+
+    return workbook;
+  }
 }
