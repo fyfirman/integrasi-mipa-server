@@ -233,31 +233,10 @@ export default class ExcelService {
         Object.assign(voteResult, { [candidateId]: 0 });
       });
 
-      let i = -1;
+      let i = 0;
       data.forEach((value, index) => {
-        if (result.length !== 0) {
-          if (value._id.date !== result[i].date) {
-            voteResult = {
-              dayOf: voteResult.dayOf + 1,
-              date: value._id.date,
-              total: value.total,
-            };
-            getExistCandidate().forEach((hima) => {
-              Object.assign(voteResult, { [hima]: 0 });
-            });
-            Object.assign(voteResult, {
-              [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
-            });
-            result.push(voteResult);
-            i += 1;
-          } else {
-            Object.assign(voteResult, {
-              [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
-            });
-            voteResult.total += value.total;
-          }
-        } else {
-          i = 0;
+        // If date is not exist, then create new rows
+        if (value._id.date !== (result[i] ? result[i].date : false)) {
           voteResult = {
             dayOf: index + 1,
             date: value._id.date,
@@ -270,6 +249,12 @@ export default class ExcelService {
             [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
           });
           result.push(voteResult);
+          i += 1;
+        } else {
+          Object.assign(voteResult, {
+            [`${value.candidateNumber} - ${value.candidateName}`]: value.total,
+          });
+          voteResult.total += value.total;
         }
       });
       return result;
