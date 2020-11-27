@@ -23,7 +23,6 @@ export default class ExcelService {
 
     let acumulateTotal = 0;
     data.forEach((value, index) => {
-      console.log(value.totalVerified);
       acumulateTotal += value.total;
       result.push({
         dayOf: index + 1,
