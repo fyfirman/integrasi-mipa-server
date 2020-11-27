@@ -35,7 +35,7 @@ export default (voteRouter: Router): void => {
 
         if (groupBy !== undefined && !['major', 'batchYear'].includes(groupBy)) {
           throw new RestError(
-            402,
+            422,
             `Params groupBy '${groupBy}' is invalid. Please use 'major' or 'batchYear'`,
           );
         }
@@ -132,7 +132,7 @@ export default (voteRouter: Router): void => {
               throw new RestError(404, 'Workbook grouping by batch year only available in HIMA');
             }
             if (major === undefined) {
-              throw new RestError(402, 'Major params is required');
+              throw new RestError(422, 'Major params is required');
             }
             groupBy = ['date', 'batchYear'];
             data = await voteService.getResult(voteType, major, groupBy);
