@@ -80,29 +80,29 @@ export default class ExcelService {
             voteResult = {
               dayOf: voteResult.dayOf + 1,
               date: value._id.date,
-              total: value.total,
+              total: value.totalVerified,
             };
             getExistBatchYear().forEach((batchYear) => {
               Object.assign(voteResult, { [batchYear]: 0 });
             });
-            Object.assign(voteResult, { [value._id.batchYear]: value.total });
+            Object.assign(voteResult, { [value._id.batchYear]: value.totalVerified });
             result.push(voteResult);
             i += 1;
           } else {
-            Object.assign(voteResult, { [value._id.batchYear]: value.total });
-            voteResult.total += value.total;
+            Object.assign(voteResult, { [value._id.batchYear]: value.totalVerified });
+            voteResult.total += value.totalVerified;
           }
         } else {
           i = 0;
           voteResult = {
             dayOf: index + 1,
             date: value._id.date,
-            total: value.total,
+            total: value.totalVerified,
           };
           getExistBatchYear().forEach((batchYear) => {
             Object.assign(voteResult, { [batchYear]: 0 });
           });
-          Object.assign(voteResult, { [value._id.batchYear]: value.total });
+          Object.assign(voteResult, { [value._id.batchYear]: value.totalVerified });
           result.push(voteResult);
         }
       });
@@ -162,29 +162,29 @@ export default class ExcelService {
             voteResult = {
               dayOf: voteResult.dayOf + 1,
               date: value._id.date,
-              total: value.total,
+              total: value.totalVerified,
             };
             getExistHima().forEach((hima) => {
               Object.assign(voteResult, { [hima]: 0 });
             });
-            Object.assign(voteResult, { [value._id.major]: value.total });
+            Object.assign(voteResult, { [value._id.major]: value.totalVerified });
             result.push(voteResult);
             i += 1;
           } else {
-            Object.assign(voteResult, { [value._id.major]: value.total });
-            voteResult.total += value.total;
+            Object.assign(voteResult, { [value._id.major]: value.totalVerified });
+            voteResult.total += value.totalVerified;
           }
         } else {
           i = 0;
           voteResult = {
             dayOf: index + 1,
             date: value._id.date,
-            total: value.total,
+            total: value.totalVerified,
           };
           getExistHima().forEach((hima) => {
             Object.assign(voteResult, { [hima]: 0 });
           });
-          Object.assign(voteResult, { [value._id.major]: value.total });
+          Object.assign(voteResult, { [value._id.major]: value.totalVerified });
           result.push(voteResult);
         }
       });
