@@ -186,7 +186,7 @@ export default class CardVerificationService {
       await this.updatePassword(cardVerification);
       updateData = { isVerified: true };
     } else {
-      updateData = { hasUpload: false };
+      updateData = { isVerified: false, hasUpload: false };
     }
     const result = await this.userModel.updateOne(
       { _id: cardVerification.user },
