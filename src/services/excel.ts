@@ -27,6 +27,8 @@ export default class ExcelService {
       result.push({
         dayOf: index + 1,
         date: value._id.date,
+        verifiedVoteCount: value.totalVerified,
+        unverifiedVoteCount: value.totalUnverified,
         voteCount: value.total,
         acumulateVoteCount: acumulateTotal,
       });
@@ -37,6 +39,8 @@ export default class ExcelService {
     worksheet.columns = [
       { header: 'Hari ke-', key: 'dayOf', width: 8 },
       { header: 'Tanggal', key: 'date', width: 11 },
+      { header: 'Jumlah Suara Ditolak/Belum Diverifikasi', key: 'unverifiedVoteCount', width: 10 },
+      { header: 'Jumlah Suara Terverifikasi', key: 'verifiedCount', width: 10 },
       { header: 'Jumlah Suara Masuk', key: 'voteCount', width: 10 },
       { header: 'Akumulasi Suara Masuk', key: 'acumulateVoteCount', width: 10 },
     ];
