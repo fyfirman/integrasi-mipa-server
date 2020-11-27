@@ -5,6 +5,7 @@ import isAdminHIMA from './isAdminHIMA';
 import isAdminMIPA from './isAdminMIPA';
 import isAdmin from './isAdmin';
 import isUser from './isUser';
+import isVerified from './isVerified';
 
 export default {
   attachCurrentUser,
@@ -12,6 +13,7 @@ export default {
   uploadPhoto,
   isAdminHIMA,
   isAdminMIPA,
+  isVerified,
   isUser,
   isAdmin,
 };

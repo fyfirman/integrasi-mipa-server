@@ -69,6 +69,7 @@ export default (app: Router): void => {
     middlewares.isAuth,
     middlewares.attachCurrentUser,
     middlewares.isUser,
+    middlewares.isVerified,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const inputVoteDTO: IVoteDTO = {
