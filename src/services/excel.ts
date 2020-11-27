@@ -249,9 +249,9 @@ export default class ExcelService {
             Object.assign(voteResult, {
               [`${value.candidateNumber} - ${value.candidateName}`]: value.totalVerified,
             });
-            voteResult[emptyBox] += value.totalUnverified;
+            // voteResult[emptyBox] += value.totalUnverified;
           } else {
-            voteResult[emptyBox] += value.total;
+            voteResult[emptyBox] += value.totalVerified;
           }
         };
 
@@ -261,7 +261,7 @@ export default class ExcelService {
             dayOf: i + 1,
             date: value._id.date,
             [emptyBox]: 0,
-            total: value.total,
+            total: value.totalVerified,
           };
           assignZeroToEach(voteResult);
           assignResult();
@@ -270,7 +270,7 @@ export default class ExcelService {
         } else {
           // If date is exist, then fill atribute
           assignResult();
-          voteResult.total += value.total;
+          voteResult.total += value.totalVerified;
           result[i - 1] = voteResult;
         }
       });
